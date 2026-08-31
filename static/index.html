@@ -6,11 +6,18 @@
 <title>Berkas</title>
 <style>
   :root{
+    --bg:#faf9f7; --panel:#ffffff; --line:#e2ded7; --line-soft:#eeebe5;
+    --ink:#1c1b18; --dim:#5d5a53; --faint:#8f8b82;
+    --ok:#2f7a41; --block:#c03a2b; --edit:#96690c; --accent:#2563a8;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,sans-serif;
+    --shadow:0 1px 2px rgba(28,27,24,.05);
+  }
+  :root[data-theme="dark"]{
     --bg:#0c0e11; --panel:#14181d; --line:#242a32; --line-soft:#1c2128;
     --ink:#e9e7e4; --dim:#8b949e; --faint:#5c6773;
     --ok:#3fb950; --block:#f85149; --edit:#d29922; --accent:#58a6ff;
-    --mono:ui-monospace,"SF Mono",Menlo,monospace;
-    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;
+    --shadow:none;
   }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans);
@@ -21,6 +28,10 @@
          border-bottom:1px solid var(--line);margin-bottom:36px}
   header h1{font-size:20px;margin:0;letter-spacing:-.01em}
   header .gloss{color:var(--faint);font-size:13px}
+  header .chrome{margin-left:auto;display:flex;gap:8px}
+  .chip{background:transparent;border:1px solid var(--line);color:var(--dim);
+        font:11px var(--mono);letter-spacing:.06em;padding:6px 11px;border-radius:6px}
+  .chip:hover{border-color:var(--accent);color:var(--accent)}
 
   .step{display:none}
   .step.on{display:block;animation:in .25s ease}
@@ -31,17 +42,64 @@
 
   .drop{border:1.5px dashed var(--line);border-radius:12px;padding:44px 24px;
         text-align:center;cursor:pointer;transition:.15s;background:var(--panel)}
-  .drop:hover,.drop.hot{border-color:var(--accent);background:#131a22}
+  .drop:hover,.drop.hot{border-color:var(--accent);background:var(--panel);box-shadow:var(--shadow)}
   .drop .icon{font-size:30px;display:block;margin-bottom:10px}
   .drop .hint{color:var(--faint);font-size:13px;margin-top:6px}
   #fileName{margin-top:14px;font:13px var(--mono);color:var(--ok)}
+  .slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+  .slot{border:1.5px dashed var(--line);border-radius:12px;padding:22px 18px;background:var(--panel);
+        cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:7px}
+  .slot:hover,.slot.hot{border-color:var(--accent);box-shadow:var(--shadow)}
+  .slot .role{font:11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+  .slot .t{font-weight:600;font-size:15px}
+  .slot .d{color:var(--faint);font-size:13px;line-height:1.5}
+  .slot .got{font:12px var(--mono);color:var(--ok);margin-top:3px}
+  .why0{margin:0 0 22px;color:var(--dim);font-size:14px;max-width:62ch;line-height:1.6}
+  .warn{border:1px solid var(--block);border-radius:10px;padding:15px 18px;margin:0 0 26px;
+        background:var(--panel);display:flex;flex-direction:column;gap:6px}
+  .warn b{color:var(--block);font-size:14.5px}
+  .warn span{color:var(--dim);font-size:13.5px;line-height:1.55}
+  .block-n{display:flex;align-items:baseline;gap:10px;margin:30px 0 12px}
+  .block-n i{font:600 11px var(--mono);letter-spacing:.1em;color:var(--accent);font-style:normal}
+  .block-n h3{margin:0;font-size:17px}
+  .block-n em{font-style:normal;color:var(--faint);font-size:12.5px;margin-left:auto}
+  .ask{border:1px solid var(--line);border-radius:10px;background:var(--panel);padding:16px 18px;
+       margin-bottom:11px;display:flex;flex-direction:column;gap:10px}
+  .ask .qt{font-size:14.5px;line-height:1.5}
+  .ask .row{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+  .rec{background:var(--block);color:#fff;font-size:13px;padding:9px 16px;border-radius:20px}
+  .rec.on{background:var(--block);animation:pulse 1.1s ease-in-out infinite}
+  @keyframes pulse{50%{opacity:.55}}
+  @media (prefers-reduced-motion:reduce){.rec.on{animation:none}}
+  .ask .state{font:12px var(--mono);color:var(--faint)}
+  .ask .state.done{color:var(--ok)}
+  .lvl{border:1px solid var(--ok);border-radius:10px;background:var(--panel);padding:15px 18px;
+       margin-top:14px;display:flex;flex-direction:column;gap:7px}
+  .lvl b{color:var(--ok);font-size:14.5px}
+  .lvl code{font:12px var(--mono);color:var(--dim)}
+  .lvl .row{display:flex;align-items:center;gap:12px;margin-top:4px}
+  .del{background:transparent;border:1px solid var(--block);color:var(--block);
+       font-size:12.5px;padding:7px 13px;border-radius:6px}
+  .del:hover{background:var(--block);color:#fff}
+  .rejected{border:1px solid var(--block);border-radius:10px;background:var(--panel);
+            padding:16px 18px;margin-top:14px;display:flex;flex-direction:column;gap:8px}
+  .rejected b{color:var(--block)}
+  .rejected ul{margin:2px 0 0;padding-left:18px;color:var(--dim);font-size:13px}
+  .rejected li{margin-bottom:3px}
 
   button{font:inherit;font-weight:500;border:0;border-radius:8px;padding:13px 22px;
-         background:var(--accent);color:#04121f;cursor:pointer;transition:.15s}
+         background:var(--accent);color:#fff;cursor:pointer;transition:.15s}
   button:hover:not(:disabled){filter:brightness(1.12)}
-  button:disabled{background:#21262d;color:var(--faint);cursor:not-allowed}
+  button:disabled{background:var(--line-soft);color:var(--faint);cursor:not-allowed}
   button.ghost{background:transparent;color:var(--dim);border:1px solid var(--line)}
   .actions{margin-top:28px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .nav{display:flex;align-items:center;gap:14px;margin:0 0 18px}
+  .back{background:transparent;border:0;color:var(--dim);font:13px var(--sans);padding:6px 0;
+        cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+  .back:hover{color:var(--accent)}
+  .crumbs{margin-left:auto;font:11px var(--mono);color:var(--faint);letter-spacing:.06em}
+  .crumbs b{color:var(--accent);font-weight:500}
+  .again{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap}
 
   /* Screen 2 — the rulebook, still editable */
   .rules{border:1px solid var(--line);border-radius:10px;overflow:hidden}
@@ -52,8 +110,8 @@
   .rule input{width:100%;background:transparent;border:1px solid transparent;
               border-radius:6px;padding:7px 9px;color:var(--ink);font:14px var(--mono)}
   .rule input:hover{border-color:var(--line)}
-  .rule input:focus{outline:0;border-color:var(--edit);background:#1a1710}
-  .rule.touched input{border-color:var(--edit);background:#1a1710}
+  .rule input:focus{outline:0;border-color:var(--edit);background:var(--panel)}
+  .rule.touched input{border-color:var(--edit);background:var(--panel)}
   .rule .was{font:12px var(--mono);color:var(--edit);padding-left:9px}
   .caps{margin-top:8px}
   .cap-row{display:grid;grid-template-columns:1fr 110px;gap:14px;align-items:center;
@@ -62,14 +120,18 @@
   .cap-row .nm{font-size:14px}
   .cap-row .req{color:var(--faint);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
   .note{margin-top:18px;padding:12px 14px;border-left:2px solid var(--edit);
-        background:#16130c;color:#e3c46a;font-size:13px;border-radius:0 6px 6px 0}
+        background:var(--panel);color:var(--edit);font-size:13px;border-radius:0 6px 6px 0}
 
   /* Interview */
   .q{border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:12px;
      background:var(--panel)}
-  .q .why{color:var(--faint);font-size:12px;margin:6px 0 10px}
+  .q .why{color:var(--faint);font-size:12px;margin:6px 0 8px}
+  .q .shape{font:11.5px var(--mono);color:var(--edit);background:var(--bg);
+            border-left:2px solid var(--edit);padding:6px 9px;margin:0 0 10px;border-radius:0 4px 4px 0}
+  .skip{margin:0 0 20px;padding:11px 14px;border:1px solid var(--line);border-radius:8px;
+        background:var(--panel);color:var(--dim);font-size:13px}
   .q .sec{color:var(--accent);font:11px var(--mono);text-transform:uppercase;letter-spacing:.06em}
-  .q textarea{width:100%;background:#0f1317;border:1px solid var(--line);border-radius:6px;
+  .q textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;
               color:var(--ink);font:14px/1.5 var(--sans);padding:10px;resize:vertical;min-height:64px}
   .q textarea:focus{outline:0;border-color:var(--accent)}
 
@@ -86,15 +148,38 @@
          background:var(--block);color:#fff;font-weight:700}
   .sec-card textarea{width:100%;border:0;background:transparent;color:var(--ink);
                      font:14px/1.65 var(--sans);padding:14px 16px;resize:vertical;min-height:150px}
-  .sec-card textarea:focus{outline:0;background:#0f1317}
+  .sec-card textarea:focus{outline:0;background:var(--bg)}
 
   .verdict{border-radius:10px;padding:16px 18px;margin:22px 0;font-size:15px}
-  .verdict.bad{background:#1d1112;border:1px solid var(--block);color:#ffb4ae}
-  .verdict.good{background:#0f1a12;border:1px solid var(--ok);color:#8fdc9c}
+  .verdict.bad{background:var(--panel);border:1px solid var(--block);color:var(--block)}
+  .verdict.good{background:var(--panel);border:1px solid var(--ok);color:var(--ok)}
   .verdict b{display:block;margin-bottom:4px;font-size:16px}
+  .routing{margin:0 0 18px;padding:11px 14px;border:1px solid var(--line);border-radius:8px;
+           background:var(--panel);font:12.5px var(--mono);color:var(--dim)}
+  .routing .m{color:var(--accent)}
+  .routing .z{color:var(--edit)}
+  .pool{margin:0 0 12px;padding:11px 14px;border:1px solid var(--line);border-radius:8px;
+        background:var(--panel);font:12.5px var(--mono);color:var(--dim)}
+  .pool b{color:var(--ink);font-weight:600}
+  .pool .none{color:var(--block)}
   .verdict ul{margin:8px 0 0;padding-left:18px}
+  .attest{margin-top:14px;padding:12px 14px;border:1px solid var(--edit);border-radius:8px;
+          background:var(--panel);color:var(--edit);font-size:13px}
+  .attest b{display:block;margin-bottom:5px;color:var(--edit)}
+  .attest code{font:12px var(--mono);color:var(--ink)}
+  .attest button{margin-top:12px;background:var(--edit);color:#fff;font-size:13px;padding:9px 15px}
+  .attest button:disabled{background:var(--line-soft);color:var(--faint)}
+  .claims{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 2px}
+  .claim{display:flex;align-items:center;gap:6px;padding:5px 9px;border:1px solid var(--line);
+         border-radius:6px;background:var(--bg);font:12px var(--mono);cursor:pointer;color:var(--ink)}
+  .claim:hover{border-color:var(--edit)}
+  .claim input{accent-color:var(--edit);cursor:pointer;margin:0;width:15px;height:15px}
+  .claim:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+  .claim.on{border-color:var(--edit);background:var(--panel)}
+  .attested{margin-top:14px;padding:11px 14px;border:1px solid var(--ok);border-radius:8px;
+            background:var(--panel);color:var(--ok);font:12.5px var(--mono)}
 
-  .receipt{border:1px solid var(--ok);background:#0f1a12;border-radius:10px;padding:18px}
+  .receipt{border:1px solid var(--ok);background:var(--panel);border-radius:10px;padding:18px}
   .receipt h3{margin:0 0 12px;font-size:16px;color:var(--ok)}
   .receipt dl{display:grid;grid-template-columns:170px 1fr;gap:7px 14px;margin:0;
               font:12.5px var(--mono)}
@@ -114,11 +199,72 @@
 <div class="wrap">
   <header>
     <h1>Berkas</h1>
-    <span class="gloss">Indonesian: the file, the dossier, the papers you submit.</span>
+    <span class="gloss" data-i18n="gloss">Indonesian: the file, the dossier, the papers you submit.</span>
+    <div class="chrome">
+      <button class="chip" id="lang" title="Bahasa">EN</button>
+      <button class="chip" id="theme" title="Theme">◐</button>
+    </div>
   </header>
 
+  <!-- 0 ................................................................. -->
+  <section id="s0" class="step on">
+    <h2 data-i18n="s0h">First, who is writing?</h2>
+    <p class="lede" data-i18n="s0lede">Berkas only says what you have already said. Give it something
+      to work from.</p>
+
+    <div class="warn">
+      <b data-i18n="warnT">Nothing here may be AI-generated.</b>
+      <span data-i18n="warnB">Not the writing sample, not the recording. A voice built from generated
+        text teaches Berkas to sound generated, and you would end up with a machine imitating a
+        machine imitating you. Samples are checked, and generated ones are refused.</span>
+    </div>
+
+    <div class="block-n"><i>01</i><h3 data-i18n="b1h">Your background</h3><em data-i18n="b1n">read for facts</em></div>
+    <p class="why0" data-i18n="b1d">A CV, past applications, anything that states what you have
+      actually done. Berkas may only claim things it can find in here. Formal documents are fine —
+      this pile is never read for style.</p>
+    <div class="slot" id="slotBg">
+      <span class="role" data-i18n="dropf">Drop files, or click to choose</span>
+      <span class="d" data-i18n="dropt">PDF, Markdown or plain text</span>
+      <span class="got" id="gotBg"></span>
+    </div>
+
+    <div class="block-n"><i>02</i><h3 data-i18n="b2h">How you write</h3><em data-i18n="b2n">read for style</em></div>
+    <p class="why0" data-i18n="b2d">A LinkedIn post, an Instagram caption, a long message, a journal
+      entry. Something you wrote yourself, unaided. This is what stops the packet sounding like every
+      other packet.</p>
+    <div class="slot" id="slotVoice">
+      <span class="role" data-i18n="dropf">Drop files, or click to choose</span>
+      <span class="d" data-i18n="dropt">PDF, Markdown or plain text</span>
+      <span class="got" id="gotVoice"></span>
+    </div>
+    <div id="voiceRejected"></div>
+
+    <div class="block-n"><i>03</i><h3 data-i18n="b3h">How you speak</h3><em data-i18n="b3n">recorded, not uploaded</em></div>
+    <p class="why0" data-i18n="b3d">For scripts, talks and presentations — things you have to say out
+      loud. How you speak is not how you write, and the level matters most: a script pitched above
+      the way you actually talk is one you will stumble through in front of a room. Answer at least
+      one, out loud, the way you normally would.</p>
+    <div id="asks"></div>
+    <div id="spoken"></div>
+
+    <div class="actions">
+      <button id="toCall" data-i18n="cont">Continue</button>
+      <button id="skipCorpus" class="ghost" data-i18n="skip">Skip — use the built-in demo corpus</button>
+      <span class="status" id="s0status"></span>
+    </div>
+    <div class="err" id="s0err"></div>
+  </section>
+
+  <input type="file" id="fileBg" hidden multiple accept=".md,.txt,.pdf,text/plain,application/pdf">
+  <input type="file" id="fileVoice" hidden multiple accept=".md,.txt,.pdf,text/plain,application/pdf">
+
   <!-- 1 ................................................................. -->
-  <section id="s1" class="step on">
+  <section id="s1" class="step">
+    <div class="nav">
+      <button class="back" data-back="s0">&larr; <span data-i18n="back">Back</span></button>
+      <span class="crumbs" data-crumb="s1"></span>
+    </div>
     <h2>What are you applying to?</h2>
     <p class="lede">Berkas reads the call and tells you what it actually requires.</p>
     <div class="drop" id="drop">
@@ -137,6 +283,10 @@
 
   <!-- 2 ................................................................. -->
   <section id="s2" class="step">
+    <div class="nav">
+      <button class="back" data-back="s1">&larr; <span data-i18n="back">Back</span></button>
+      <span class="crumbs" data-crumb="s2"></span>
+    </div>
     <h2>Correct me before I start</h2>
     <p class="lede">These become the rules. Nothing is written until you agree.</p>
     <div class="rules" id="rules"></div>
@@ -151,6 +301,10 @@
 
   <!-- 3 ................................................................. -->
   <section id="s3" class="step">
+    <div class="nav">
+      <button class="back" data-back="s2">&larr; <span data-i18n="back">Back</span></button>
+      <span class="crumbs" data-crumb="s3"></span>
+    </div>
     <h2>A few things your files don't answer</h2>
     <p class="lede">Berkas asks rather than assumes. Anything you leave blank stays
       marked in the packet, and a marked packet cannot be submitted.</p>
@@ -164,8 +318,14 @@
 
   <!-- 4 ................................................................. -->
   <section id="s4" class="step">
+    <div class="nav">
+      <button class="back" data-back="s3">&larr; <span data-i18n="back">Back</span></button>
+      <span class="crumbs" data-crumb="s4"></span>
+    </div>
     <h2 id="s4title">The packet</h2>
     <p class="lede">Hard constraints cap. They do not warn.</p>
+    <div id="pool"></div>
+    <div id="routing"></div>
     <div id="verdict"></div>
     <div id="sections"></div>
     <div class="rule" id="toRow" style="border:1px solid var(--line);border-radius:10px;margin-top:20px">
@@ -173,6 +333,7 @@
       <input id="to" placeholder="recipient@example.com">
     </div>
     <div class="actions">
+      <button id="back" class="ghost">← Answer the questions</button>
       <button id="recheck" class="ghost">Re-check</button>
       <button id="send" disabled>Send it</button>
       <span class="status" id="s4status"></span>
@@ -185,25 +346,334 @@
 
 <script>
 const $ = s => document.querySelector(s);
+
+// Everything the model or the call document writes goes through here before it
+// reaches innerHTML. The answer shapes are literally "<university>, <country>",
+// which the browser parses as tags and silently drops.
+const esc = t => String(t ?? "").replace(/[&<>"']/g,
+  c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+/* ---- language + theme ------------------------------------------------------
+   The interface speaks two languages; the packet is always written in whatever
+   register the call document demands, which is a separate thing entirely. */
+const STRINGS = {
+  en: {
+    // Strings that live only in JS: applyLang() harvests English from data-i18n
+    // attributes in the markup, and these have no element to be harvested from.
+    recStart: "Record your answer", recStop: "Done", listening: "recording…",
+    profiling: "listening to how you speak…", recorded: "recorded",
+    levelIs: "You speak at:", wontUse: "words it will keep out of your script",
+    micDenied: "Could not reach the microphone. Allow microphone access in your browser.",
+    needSomething: "Add something, or choose the demo corpus — Berkas will not write about a "
+                 + "person it knows nothing about.",
+    checkingVoice: "checking your writing sample…", readingBg: "reading your background…",
+    refused: "Refused", refusedWhy: "Give it something else you wrote yourself, unaided.",
+    delRec: "Delete recording", deleting: "deleting…",
+    tickFirst: "Tick the ones that are yours", attestN: "Attest", claim: "claim",
+    claims: "claims", asMine: "as mine",
+    back: "Back", stWho: "who", stCall: "call", stRules: "rules", stAsk: "answers",
+    stPacket: "packet", sendIt: "Send it", sent: "Sent",
+    cannotSubmit: "Cannot submit", violation: "violation", violations: "violations",
+    fileAnother: "File another application", startOver: "Start over",
+    checkedAgainst: "Claims checked against", filesWord: "background files",
+    plusAnswers: ", plus your interview answers:",
+    noFacts: "You gave Berkas no background files, so it has nothing to check claims "
+           + "against. Every specific it writes will be marked. Go back and add a CV or "
+           + "past application under \"Your background\".",
+  },
+  id: {
+    gloss: "Bahasa Indonesia: berkas, dokumen yang lo serahkan.",
+    s0h: "Pertama, siapa yang nulis?",
+    s0lede: "Berkas cuma bilang apa yang udah pernah lo bilang. Kasih bahannya dulu.",
+    warnT: "Nggak boleh ada yang dibikin AI.",
+    warnB: "Sampel tulisan maupun rekaman. Suara yang dibangun dari teks hasil AI cuma ngajarin " +
+           "Berkas buat kedengeran kayak AI, dan lo bakal dapet mesin yang niru mesin yang niru lo. " +
+           "Sampel diperiksa, dan yang hasil AI ditolak.",
+    b1h: "Latar belakang lo", b1n: "dibaca buat fakta",
+    b1d: "CV, lamaran lama, apa pun yang nyatain apa yang beneran udah lo kerjain. Berkas cuma boleh " +
+         "ngeklaim hal yang ketemu di sini. Dokumen formal nggak masalah — bagian ini nggak pernah " +
+         "dibaca buat gaya nulis.",
+    b2h: "Cara lo nulis", b2n: "dibaca buat gaya",
+    b2d: "Postingan LinkedIn, caption IG, chat panjang, catatan harian. Sesuatu yang lo tulis sendiri, " +
+         "tanpa bantuan. Ini yang bikin hasilnya nggak kedengeran kayak punya orang lain.",
+    b3h: "Cara lo ngomong", b3n: "direkam, bukan diupload",
+    b3d: "Buat script, presentasi, jadi pembicara — hal yang harus lo ucapin. Cara ngomong beda sama " +
+         "cara nulis, dan yang paling penting levelnya: script yang levelnya di atas cara lo ngomong " +
+         "itu script yang bakal bikin lo tersendat di depan orang. Jawab minimal satu, lisan, " +
+         "sewajarnya lo ngomong.",
+    dropf: "Taruh file di sini, atau klik buat pilih", dropt: "PDF, Markdown, atau teks biasa",
+    cont: "Lanjut", skip: "Lewati — pakai korpus demo bawaan",
+    recStart: "Rekam jawaban", recStop: "Selesai", listening: "merekam…",
+    profiling: "mendengarkan cara lo ngomong…", recorded: "sudah direkam",
+    levelIs: "Level bicara lo:", wontUse: "kata yang nggak akan dipakai di script lo",
+    micDenied: "Mikrofon nggak bisa diakses. Izinkan akses mikrofon di browser lo.",
+    needSomething: "Kasih sesuatu dulu, atau pilih korpus demo — Berkas nggak akan nulis tentang " +
+                   "orang yang nggak dia kenal sama sekali.",
+    checkingVoice: "memeriksa sampel tulisan lo…", readingBg: "membaca latar belakang lo…",
+    refused: "Ditolak", refusedWhy: "Kasih sampel lain yang lo tulis sendiri, tanpa AI.",
+    delRec: "Hapus rekaman", deleting: "menghapus…",
+    tickFirst: "Centang yang memang punya lo", attestN: "Akui", claim: "klaim",
+    claims: "klaim", asMine: "sebagai milik lo",
+    back: "Kembali", stWho: "siapa", stCall: "dokumen", stRules: "aturan",
+    stAsk: "jawaban", stPacket: "berkas", sendIt: "Kirim", sent: "Terkirim",
+    cannotSubmit: "Tidak bisa dikirim", violation: "pelanggaran", violations: "pelanggaran",
+    fileAnother: "Ajukan lamaran lain", startOver: "Mulai dari awal",
+    checkedAgainst: "Klaim dicek terhadap", filesWord: "file latar belakang",
+    plusAnswers: ", plus jawaban wawancara lo:",
+    noFacts: "Lo belum kasih file latar belakang, jadi Berkas nggak punya apa-apa buat "
+           + "ngecek klaim. Semua hal spesifik yang dia tulis bakal ditandai. Balik ke awal "
+           + "dan tambahin CV atau lamaran lama di \"Latar belakang lo\".",
+  },
+};
+let lang = localStorage.getItem("berkas.lang") || "en";
+const T = k => (STRINGS[lang] && STRINGS[lang][k]) || STRINGS.en[k] || k;
+
+function applyLang() {
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const k = el.dataset.i18n;
+    if (!STRINGS.en[k]) STRINGS.en[k] = el.textContent.trim();   // English is the source
+    el.textContent = T(k);
+  });
+  $("#lang").textContent = lang.toUpperCase();
+  document.documentElement.lang = lang;
+  if ($("#asks")) renderAsks();
+  // Breadcrumbs are translated too, so re-render whichever step is showing.
+  const on = [...document.querySelectorAll(".step")].find(x => x.classList.contains("on"));
+  if (on) show(on.id);
+}
+$("#lang").onclick = () => {
+  lang = lang === "en" ? "id" : "en";
+  localStorage.setItem("berkas.lang", lang);
+  applyLang();
+};
+
+const applyTheme = t => {
+  document.documentElement.setAttribute("data-theme", t);
+  $("#theme").textContent = t === "dark" ? "☾" : "☀";
+};
+let theme = localStorage.getItem("berkas.theme") || "light";
+$("#theme").onclick = () => {
+  theme = theme === "light" ? "dark" : "light";
+  localStorage.setItem("berkas.theme", theme);
+  applyTheme(theme);
+};
 const api = "/api";
-let state = { file:null, specId:null, spec:null, extracted:null, draftId:null, compliance:null };
 
-const show = id => document.querySelectorAll(".step")
-  .forEach(s => s.classList.toggle("on", s.id === id));
-const busy = (el, msg) => el.innerHTML = msg ? `<span class="spin"></span>${msg}` : "";
-const fail = (el, e) => el.textContent = typeof e === "string" ? e : (e.message || JSON.stringify(e));
+const STEPS = ["s0", "s1", "s2", "s3", "s4"];
+const STEP_KEYS = { s0: "stWho", s1: "stCall", s2: "stRules", s3: "stAsk", s4: "stPacket" };
 
-async function call(path, opts={}) {
+const show = id => {
+  document.querySelectorAll(".step").forEach(sec => sec.classList.toggle("on", sec.id === id));
+  const at = STEPS.indexOf(id);
+  document.querySelectorAll("[data-crumb]").forEach(el => {
+    el.innerHTML = STEPS.map((sid, i) =>
+      i === at ? `<b>${esc(T(STEP_KEYS[sid]))}</b>` : esc(T(STEP_KEYS[sid]))).join(" · ");
+  });
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
+const busy = (el, msg) => el.innerHTML = msg ? `<span class="spin"></span>${esc(msg)}` : "";
+const fail = (el, e) => {
+  // "{}" is what the user saw when the server 500'd with no JSON body. An error
+  // message that says nothing is worse than no error message, because it looks
+  // like the app is broken rather than like something specific went wrong.
+  if (typeof e === "string") { el.textContent = e; return; }
+  let msg = e.message && e.message !== "{}" ? e.message : "";
+  if (!msg) {
+    msg = e.status >= 500
+      ? `Something failed on the server (HTTP ${e.status}). Check the deadline and the section `
+        + `caps on the previous screen, then try again.`
+      : `Request failed${e.status ? " (HTTP " + e.status + ")" : ""}.`;
+  }
+  el.textContent = msg;
+};
+
+async function call(path, opts = {}) {
+  // call() prefixes /api itself. Passing "/api/..." once produced "/api/api/attest",
+  // a 404 that reached the user as a button that simply did nothing.
+  if (path.startsWith("/api/")) throw new Error(`call() adds /api; drop it from "${path}"`);
   const r = await fetch(api + path, opts);
   const body = await r.json().catch(() => ({}));
-  if (!r.ok) { const e = new Error(typeof body.detail === "string" ? body.detail
-                : JSON.stringify(body.detail || body)); e.status = r.status; e.detail = body.detail; throw e; }
+  if (!r.ok) {
+    const e = new Error(typeof body.detail === "string" ? body.detail
+      : JSON.stringify(body.detail || body));
+    e.status = r.status;
+    e.detail = body.detail;
+    throw e;
+  }
   return body;
 }
+let state = { sessionId:null, file:null, specId:null, spec:null, extracted:null,
+              draftId:null, compliance:null };
 
-fetch(api + "/health").then(r => r.json())
-  .then(h => { if (h.default_recipient) $("#to").value = h.default_recipient; })
-  .catch(() => {});
+/* 0 — whose application is this --------------------------------------- */
+const newSession = () => (crypto.randomUUID ? crypto.randomUUID()
+  : String(Date.now()) + Math.random().toString(16).slice(2)).replace(/-/g, "").slice(0, 24);
+const picked = { background: [], voice: [] };
+
+/* Three questions chosen to pull different registers out of someone: enthusiasm,
+   explanation, and an unguarded past tense. Between them the level shows. */
+const ASKS = {
+  en: [
+    "Tell me about something you made or did recently that you are actually proud of. What was it, and what was hard about it?",
+    "Explain what you do to someone who knows nothing about your field. No jargon.",
+    "Tell me about a time something you were working on went wrong. What happened, and what did you do?",
+  ],
+  id: [
+    "Ceritain sesuatu yang baru-baru ini lo bikin atau lo kerjain dan lo beneran bangga. Apa itu, dan bagian mana yang susah?",
+    "Jelasin apa yang lo kerjain ke orang yang sama sekali nggak ngerti bidang lo. Tanpa istilah teknis.",
+    "Ceritain waktu ada sesuatu yang lo kerjain berantakan. Apa yang terjadi, dan lo ngapain?",
+  ],
+};
+
+function renderAsks() {
+  $("#asks").innerHTML = ASKS[lang].map((q, i) => `
+    <div class="ask" data-ask="${i}">
+      <div class="qt">${esc(q)}</div>
+      <div class="row">
+        <button class="rec" data-i="${i}">${esc(T("recStart"))}</button>
+        <span class="state" data-state="${i}"></span>
+      </div>
+    </div>`).join("");
+  document.querySelectorAll(".rec").forEach(b => b.onclick = () => toggleRec(+b.dataset.i));
+}
+
+let media = null, chunks = [], recording = -1;
+
+async function toggleRec(i) {
+  const btn = document.querySelector(`.rec[data-i="${i}"]`);
+  const state = document.querySelector(`[data-state="${i}"]`);
+
+  if (recording === i) {                      // stop
+    media.stop();
+    return;
+  }
+  if (recording !== -1) return;               // one at a time
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    // Safari records audio/mp4, Chrome audio/webm. Both are accepted upstream, but
+    // ask for mp4 first so the common case is the well-trodden one.
+    const want = ["audio/mp4", "audio/webm;codecs=opus", "audio/webm"]
+      .find(t => window.MediaRecorder && MediaRecorder.isTypeSupported(t));
+    media = want ? new MediaRecorder(stream, { mimeType: want }) : new MediaRecorder(stream);
+    chunks = [];
+    media.ondataavailable = e => e.data.size && chunks.push(e.data);
+    media.onstop = async () => {
+      stream.getTracks().forEach(t => t.stop());
+      recording = -1;
+      btn.classList.remove("on");
+      btn.textContent = T("recStart");
+      state.textContent = T("listening");
+      try {
+        state.textContent = T("profiling");
+        state.classList.remove("done");
+        const type = (media.mimeType || "audio/webm").split(";")[0];
+        const blob = new Blob(chunks, { type });
+        const fd = new FormData();
+        window.__sess = window.__sess || newSession();
+        fd.append("session_id", window.__sess);
+        fd.append("prompt_asked", ASKS[lang][i]);
+        fd.append("file", blob, "answer." + (type.includes("mp4") ? "m4a" : "webm"));
+        const p = await call("/speak", { method: "POST", body: fd });
+        state.textContent = T("recorded");
+        state.classList.add("done");
+        renderSpoken(p);
+      } catch (e) {
+        state.textContent = "";
+        fail($("#s0err"), e);
+      }
+    };
+    media.start();
+    recording = i;
+    btn.classList.add("on");
+    btn.textContent = T("recStop");
+    state.textContent = T("listening");
+  } catch (e) {
+    fail($("#s0err"), T("micDenied"));
+  }
+}
+
+function renderSpoken(p) {
+  if (!p) { $("#spoken").innerHTML = ""; return; }
+  $("#spoken").innerHTML = `
+    <div class="lvl">
+      <b>${esc(T("levelIs"))} ${esc(p.cefr_level)}</b>
+      <span>${esc(p.guidance)}</span>
+      ${p.avoid && p.avoid.length ? `<code>${esc(T("wontUse"))}: ${p.avoid.slice(0,8).map(esc).join(", ")}</code>` : ""}
+      <div class="row">
+        <button class="del" id="delSpoken">${esc(T("delRec"))}</button>
+        <span class="state" id="delState"></span>
+      </div>
+    </div>`;
+  $("#delSpoken").onclick = deleteSpoken;
+}
+
+async function deleteSpoken() {
+  if (!window.__sess) { renderSpoken(null); return; }
+  busy($("#delState"), T("deleting"));
+  try {
+    await call(`/speak/${window.__sess}`, { method: "DELETE" });
+    renderSpoken(null);
+    // The answer buttons go back to unrecorded, or the screen would claim a
+    // recording that no longer exists.
+    document.querySelectorAll("[data-state]").forEach(el => {
+      el.textContent = ""; el.classList.remove("done");
+    });
+  } catch (e) { fail($("#s0err"), e); busy($("#delState"), ""); }
+}
+
+function wireSlot(slotId, inputId, gotId, kind) {
+  const slot = $(slotId), input = $(inputId);
+  slot.onclick = () => input.click();
+  slot.ondragover = e => { e.preventDefault(); slot.classList.add("hot"); };
+  slot.ondragleave = () => slot.classList.remove("hot");
+  slot.ondrop = e => { e.preventDefault(); slot.classList.remove("hot"); take(e.dataTransfer.files); };
+  input.onchange = e => take(e.target.files);
+  function take(list) {
+    picked[kind] = [...list];
+    $(gotId).textContent = picked[kind].length ? picked[kind].map(f => f.name).join(", ") : "";
+    $("#voiceRejected").innerHTML = "";
+  }
+}
+wireSlot("#slotBg", "#fileBg", "#gotBg", "background");
+wireSlot("#slotVoice", "#fileVoice", "#gotVoice", "voice");
+
+$("#skipCorpus").onclick = () => { state.sessionId = null; show("s1"); };
+
+$("#toCall").onclick = async () => {
+  $("#s0err").textContent = ""; $("#voiceRejected").innerHTML = "";
+  if (!picked.background.length && !picked.voice.length && !window.__sess) {
+    fail($("#s0err"), T("needSomething"));
+    return;
+  }
+  $("#toCall").disabled = true;
+  state.sessionId = window.__sess = window.__sess || newSession();
+  try {
+    for (const kind of ["background", "voice"]) {
+      if (!picked[kind].length) continue;
+      busy($("#s0status"), kind === "voice" ? T("checkingVoice") : T("readingBg"));
+      const fd = new FormData();
+      fd.append("session_id", state.sessionId);
+      fd.append("kind", kind);
+      picked[kind].forEach(f => fd.append("files", f));
+      await call("/corpus", { method: "POST", body: fd });
+    }
+    show("s1");
+  } catch (e) {
+    if (e.status === 422 && e.detail && e.detail.error === "ai_generated") {
+      $("#voiceRejected").innerHTML = `
+        <div class="rejected">
+          <b>${esc(T("refused"))} — ${esc(e.detail.file || "")}</b>
+          <span>${esc(e.detail.explanation)}</span>
+          <ul>${(e.detail.markers || []).map(m => `<li>“${esc(m)}”</li>`).join("")}</ul>
+          <span>${esc(T("refusedWhy"))}</span>
+        </div>`;
+      picked.voice = []; $("#gotVoice").textContent = "";
+    } else fail($("#s0err"), e);
+  }
+  $("#toCall").disabled = false;
+  busy($("#s0status"), "");
+};
 
 /* 1 — drop it ------------------------------------------------------------ */
 const drop = $("#drop"), fileIn = $("#file");
@@ -225,7 +695,9 @@ $("#read").onclick = async () => {
   $("#read").disabled = true;
   busy($("#s1status"), "reading the document…");
   try {
-    const fd = new FormData(); fd.append("file", state.file);
+    const fd = new FormData();
+    fd.append("file", state.file);
+    if (state.sessionId) fd.append("session_id", state.sessionId);
     const out = await call("/extract", { method:"POST", body:fd });
     state.specId = out.spec_id;
     state.spec = out.spec;
@@ -246,13 +718,13 @@ function renderSpec() {
   ].map(([label, key, val]) => `
     <div class="rule" data-key="${key}">
       <span class="k">${label}</span>
-      <input value="${String(val).replace(/"/g,"&quot;")}" data-field="${key}">
+      <input value="${esc(val)}" data-field="${key}"${key === "deadline" ? ' placeholder="YYYY-MM-DD"' : ""}>
     </div>`).join("");
 
   $("#caps").innerHTML = s.sections.map((sec, i) => `
     <div class="cap-row" data-i="${i}">
       <div>
-        <div class="nm">${sec.name}</div>
+        <div class="nm">${esc(sec.name)}</div>
         <div class="req">${sec.required ? "required" : "optional"}</div>
       </div>
       <input data-cap="${i}" value="${sec.word_cap ?? ""}" placeholder="no limit">
@@ -270,7 +742,7 @@ function markEdits() {
     const now = inp.value.trim();
     const diff = String(was) !== now;
     inp.closest(".rule").classList.toggle("touched", diff);
-    if (diff) changed.push(`${k}: "${was}" → "${now}"`);
+    if (diff) changed.push(`${esc(k)}: "${esc(was)}" → "${esc(now)}"`);
   });
   document.querySelectorAll("#caps input").forEach(inp => {
     const i = +inp.dataset.cap;
@@ -278,7 +750,7 @@ function markEdits() {
     const now = inp.value.trim() === "" ? null : Number(inp.value);
     const diff = was !== now;
     inp.closest(".cap-row").classList.toggle("touched", diff);
-    if (diff) changed.push(`${state.spec.sections[i].name}: ${was ?? "no limit"} → ${now ?? "no limit"} words`);
+    if (diff) changed.push(`${esc(state.spec.sections[i].name)}: ${was ?? "no limit"} → ${now ?? "no limit"} words`);
   });
 
   const note = $("#edited");
@@ -315,17 +787,22 @@ $("#confirmSpec").onclick = async () => {
 
 /* 3 — ask, don't assume --------------------------------------------------- */
 function renderQuestions(qs) {
+  state.questions = qs;
   if (!qs.length) {
     $("#questions").innerHTML = `<div class="q">Your files already answer everything this
       call asks for. Nothing to ask.</div>`;
     return;
   }
-  $("#questions").innerHTML = qs.map((q, i) => `
+  $("#questions").innerHTML = `<div class="skip">You can leave any of these blank. Berkas will
+    not guess: it marks the gap in the packet, and a marked packet cannot be submitted. You can come
+    back and answer it after you have seen the draft.</div>` + qs.map((q, i) => `
     <div class="q">
-      <div class="sec">${q.section}</div>
-      <div>${q.question}</div>
-      <div class="why">${q.why}</div>
-      <textarea data-q="${encodeURIComponent(q.question)}" placeholder="in a sentence or two…"></textarea>
+      <div class="sec">${esc(q.section)}</div>
+      <div>${esc(q.question)}</div>
+      <div class="why">${esc(q.why)}</div>
+      ${q.shape ? `<div class="shape">${esc(q.shape)}</div>` : ""}
+      <textarea data-q="${encodeURIComponent(q.question)}"
+                placeholder="in a sentence or two…">${esc((state.answers || {})[q.question] || "")}</textarea>
     </div>`).join("");
 }
 
@@ -338,6 +815,7 @@ $("#writeIt").onclick = async () => {
     document.querySelectorAll("[data-q]").forEach(t => {
       if (t.value.trim()) answers[decodeURIComponent(t.dataset.q)] = t.value.trim();
     });
+    state.answers = answers;
     if (Object.keys(answers).length)
       await call(`/answers/${state.specId}`, { method:"POST",
         headers:{"content-type":"application/json"}, body:JSON.stringify({answers}) });
@@ -345,7 +823,8 @@ $("#writeIt").onclick = async () => {
     busy($("#s3status"), "drafting against the spec…");
     const out = await call(`/draft/${state.specId}`, { method:"POST" });
     state.draftId = out.draft_id;
-    renderPacket(out.draft.sections, out.compliance);
+    state.evidence = out.evidence;
+    renderPacket(out.draft.sections, out.compliance, out.draft.routing, out.evidence);
     show("s4");
   } catch (e) { fail($("#s3err"), e); }
   $("#writeIt").disabled = false;
@@ -353,8 +832,35 @@ $("#writeIt").onclick = async () => {
 };
 
 /* 4 — the gate ------------------------------------------------------------ */
-function renderPacket(sections, compliance) {
+function renderEvidence(ev) {
+  const el = $("#pool");
+  if (!ev) { el.innerHTML = ""; return; }
+  if (!ev.count) {
+    el.innerHTML = `<span class="none">${esc(T("noFacts"))}</span>`;
+    return;
+  }
+  el.innerHTML = `${esc(T("checkedAgainst"))} <b>${ev.count} ${esc(T("filesWord"))}</b> `
+    + `(${esc(ev.source)})${esc(T("plusAnswers"))}<br>&nbsp;&nbsp;`
+    + ev.labels.map(esc).join("<br>&nbsp;&nbsp;");
+}
+
+function renderRouting(routing) {
+  const el = $("#routing");
+  if (!routing) {
+    el.innerHTML = '<span class="z">Gemma did not answer in time</span> — drafting used '
+      + 'your whole corpus, exactly as it would without routing. The packet is unaffected.';
+    return;
+  }
+  const total = Object.values(routing).reduce((a, b) => a + b, 0);
+  el.innerHTML = `<span class="m">Gemma</span> narrowed your ${state.corpusSize || ""} files to the ones each section can draw on:<br>` +
+    Object.entries(routing).map(([k, v]) =>
+      `&nbsp;&nbsp;${esc(k)}: <span class="${v === 0 ? "z" : ""}">${v} file${v === 1 ? "" : "s"}${v === 0 ? " — not narrowed, drafting sees all of them" : ""}</span>`).join("<br>");
+}
+
+function renderPacket(sections, compliance, routing, ev) {
   state.compliance = compliance;
+  renderEvidence(ev !== undefined ? ev : state.evidence);
+  renderRouting(routing);
   const byName = Object.fromEntries(compliance.checks.map(c => [c.section, c]));
 
   $("#sections").innerHTML = Object.entries(sections).map(([name, text]) => {
@@ -364,34 +870,103 @@ function renderPacket(sections, compliance) {
     return `
       <div class="sec-card ${bad ? "bad" : ""}">
         <div class="sec-head">
-          <span class="nm">${name}</span>
+          <span class="nm">${esc(name)}</span>
           <span>
             ${bad ? '<span class="badge">BLOCK</span> ' : ""}
             <span class="count ${bad ? "bad" : ""}">${c.words ?? 0} / ${cap}</span>
           </span>
         </div>
-        <textarea data-sec="${name.replace(/"/g,"&quot;")}">${text}</textarea>
+        <textarea data-sec="${esc(name)}">${esc(text)}</textarea>
       </div>`;
   }).join("");
 
   const n = compliance.violations.length;
+  // Gate 3: claims the checker could not find, which he may vouch for himself.
+  const loose = [...new Set(compliance.violations
+    .filter(v => v.rule === "unverified_claim")
+    .flatMap(v => v.actual || []))];
+  state.loose = loose;
+
   $("#verdict").innerHTML = compliance.passed
     ? `<div class="verdict good"><b>No violations.</b>
          Every hard constraint in the call is satisfied. You can submit this.</div>`
     : `<div class="verdict bad">
          <b>${n} violation${n === 1 ? "" : "s"} — cannot submit</b>
-         <ul>${compliance.violations.map(v => `<li>${v.message}</li>`).join("")}</ul>
+         <ul>${compliance.violations.map(v => `<li>${esc(v.message)}</li>`).join("")}</ul>
        </div>`;
+
+  if (loose.length) {
+    $("#verdict").innerHTML += `
+      <div class="attest">
+        <b>Berkas could not find these in your files</b>
+        It compares text, so it cannot see through a translation or a paraphrase.
+        <b style="color:var(--block);font-weight:600;margin-top:6px">Tick only the ones that are
+        genuinely yours.</b>
+        Anything you tick is recorded against your name on the receipt. If something here is
+        not yours, do not tick it — delete it from the text instead.
+        <div class="claims">${loose.map((c, i) => `
+          <label class="claim" data-claim="${esc(c)}">
+            <input type="checkbox" data-i="${i}"> ${esc(c)}
+          </label>`).join("")}</div>
+        <button id="attest" disabled>${esc(T("tickFirst"))}</button>
+      </div>`;
+    const boxes = [...document.querySelectorAll(".claim input")];
+    const sync = () => {
+      boxes.forEach(b => b.closest(".claim").classList.toggle("on", b.checked));
+      const n = boxes.filter(b => b.checked).length;
+      $("#attest").disabled = n === 0;
+      $("#attest").textContent = n === 0 ? T("tickFirst")
+        : `${T("attestN")} ${n} ${n === 1 ? T("claim") : T("claims")} ${T("asMine")}`;
+    };
+    boxes.forEach(b => b.onchange = sync);
+    $("#attest").onclick = attestClaims;
+  }
+  if ((state.attested || []).length) {
+    $("#verdict").innerHTML += `
+      <div class="attested">you personally attested: ${state.attested.map(esc).join(", ")}</div>`;
+  }
 
   $("#s4title").textContent = compliance.passed ? "The packet" :
     `${n} violation${n === 1 ? "" : "s"} — cannot submit`;
   const send = $("#send");
   send.disabled = !compliance.passed;
-  send.textContent = compliance.passed ? "Send it"
-    : `Cannot submit — ${n} violation${n === 1 ? "" : "s"}`;
+  send.textContent = compliance.passed ? T("sendIt")
+    : `${T("cannotSubmit")} — ${n} ${n === 1 ? T("violation") : T("violations")}`;
 
+  const corrected = (state.spec && state.spec.corrected_fields) || [];
   $("#trail").textContent =
-    `spec ${state.specId} · corrected: ${(state.spec.corrected_fields||[]).join(", ") || "confirmed unchanged"} · draft ${state.draftId}`;
+    `spec ${state.specId} · corrected: ${corrected.join(", ") || "confirmed unchanged"} · draft ${state.draftId}`;
+}
+
+// Going back re-renders the step being returned to, so nothing shows stale state.
+document.querySelectorAll("[data-back]").forEach(b => b.onclick = () => {
+  const to = b.dataset.back;
+  if (to === "s2" && state.spec) renderSpec();
+  if (to === "s3") renderQuestions(state.questions || []);
+  show(to);
+});
+
+$("#back").onclick = () => {
+  // The answers are kept, so a question skipped the first time can be filled in
+  // once he has seen what the gap actually did to the packet.
+  renderQuestions(state.questions || []);
+  show("s3");
+};
+
+async function attestClaims() {
+  $("#s4err").textContent = "";
+  busy($("#s4status"), "recording what you vouched for…");
+  try {
+    const out = await call(`/attest/${state.draftId}`, { method: "POST",
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify({ claims: [...document.querySelectorAll(".claim input")]
+        .filter(b => b.checked)
+        .map(b => b.closest(".claim").dataset.claim) }) });
+    state.attested = out.draft.attested_claims;
+    state.evidence = out.evidence;
+    renderPacket(out.draft.sections, out.compliance, out.draft.routing, out.evidence);
+  } catch (e) { fail($("#s4err"), e); }
+  busy($("#s4status"), "");
 }
 
 $("#recheck").onclick = async () => {
@@ -400,9 +975,11 @@ $("#recheck").onclick = async () => {
   try {
     const sections = {};
     document.querySelectorAll("[data-sec]").forEach(t => sections[t.dataset.sec] = t.value);
+    state.attested = [];   // edited text is new text; attestations do not carry over
     const out = await call(`/draft/${state.draftId}`, { method:"PUT",
       headers:{"content-type":"application/json"}, body:JSON.stringify({sections}) });
-    renderPacket(out.draft.sections, out.compliance);
+    state.evidence = out.evidence;
+    renderPacket(out.draft.sections, out.compliance, out.draft.routing, out.evidence);
   } catch (e) { fail($("#s4err"), e); }
   busy($("#s4status"), "");
 };
@@ -418,15 +995,33 @@ $("#send").onclick = async () => {
       <div class="receipt">
         <h3>Sent. Here is the receipt.</h3>
         <dl>
-          <dt>gmail message id</dt><dd>${r.gmail_message_id}</dd>
-          <dt>to</dt><dd>${r.to}</dd>
-          <dt>subject</dt><dd>${r.subject}</dd>
-          <dt>sent at</dt><dd>${r.sent_at}</dd>
-          <dt>you confirmed at</dt><dd>${r.confirmed_by_human_at}</dd>
-          <dt>receipt id</dt><dd>${r.receipt_id}</dd>
+          <dt>gmail message id</dt><dd>${esc(r.gmail_message_id)}</dd>
+          <dt>to</dt><dd>${esc(r.to)}</dd>
+          <dt>subject</dt><dd>${esc(r.subject)}</dd>
+          <dt>sent at</dt><dd>${esc(r.sent_at)}</dd>
+          <dt>you confirmed at</dt><dd>${esc(r.confirmed_by_human_at)}</dd>
+          <dt>receipt id</dt><dd>${esc(r.receipt_id)}</dd>
         </dl>
       </div>`;
-    $("#send").textContent = "Sent";
+    $("#send").textContent = T("sent");
+    $("#receipt").innerHTML += `
+      <div class="again">
+        <button id="again">${esc(T("fileAnother"))}</button>
+        <button id="home" class="ghost">${esc(T("startOver"))}</button>
+      </div>`;
+    // Another packet keeps the corpus: re-uploading it is the tedious part, and
+    // the same person is filing again. Starting over drops everything.
+    $("#again").onclick = () => {
+      state.specId = state.spec = state.extracted = state.draftId = null;
+      state.compliance = state.evidence = state.questions = null;
+      state.answers = {};
+      state.file = null;
+      $("#fileName").textContent = ""; $("#read").disabled = true;
+      $("#receipt").innerHTML = ""; $("#s4err").textContent = "";
+      $("#send").disabled = false; $("#send").textContent = T("sendIt");
+      show("s1");
+    };
+    $("#home").onclick = () => location.reload();
   } catch (e) {
     fail($("#s4err"), e.status === 409
       ? "Refused by the API: " + JSON.stringify(e.detail?.violations || e.detail)
@@ -435,6 +1030,17 @@ $("#send").onclick = async () => {
   }
   busy($("#s4status"), "");
 };
+
+/* ---- init -------------------------------------------------------------------
+   Runs last, once every handler above exists. renderAsks() lives inside
+   applyLang(), so forgetting this line costs the whole speaking block silently:
+   no error, just a screen with a section missing. */
+applyTheme(theme);
+applyLang();
+
+fetch(api + "/health").then(r => r.json())
+  .then(h => { const to = $("#to"); if (to && h.default_recipient) to.value = h.default_recipient; })
+  .catch(() => {});
 </script>
 </body>
 </html>
