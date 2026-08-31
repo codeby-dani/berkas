@@ -40,6 +40,10 @@ class StoredSpec(ExtractedSpec):
     spec_id: str = Field(default_factory=_id)
     created_at: str = Field(default_factory=_now)
 
+    # What perception originally said, kept immutable so the correction is auditable
+    # afterwards: the diff between this and the live fields is the human's edit.
+    extracted: ExtractedSpec | None = None
+
     # Gate 1. Until a human has been through it, this is a reading, not a rulebook.
     human_corrected: bool = False
     corrected_fields: list[str] = Field(default_factory=list)
