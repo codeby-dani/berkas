@@ -1,0 +1,5 @@
+google-adk==2.8.0
+# Required by `adk deploy cloud_run --trace_to_cloud`; ADK does not add it itself,
+# and without it the container crashes on startup with:
+#   ModuleNotFoundError: No module named 'opentelemetry.exporter'
+opentelemetry-exporter-gcp-trace

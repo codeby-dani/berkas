@@ -1,0 +1,19 @@
+[project]
+name = "hackathon-agent"
+version = "0.1.0"
+description = "All Things Agentic Hackathon entry"
+readme = "README.md"
+authors = [
+    { name = "Dani", email = "dani.muhammad.k@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "google-adk>=2.8.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.7,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+package = false
