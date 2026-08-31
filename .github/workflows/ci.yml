@@ -22,5 +22,10 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked
 
+      # corpus/ is gitignored on purpose -- it holds real personal files. Without
+      # this, a fresh clone has no bundled corpus and test_corpus.py fails on an
+      # assertion about the applicant's disk rather than about the code.
       - name: Run tests
+        env:
+          BERKAS_CORPUS: corpus.example
         run: uv run pytest -q

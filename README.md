@@ -176,6 +176,11 @@ fresh visit and a fork works for whoever cloned it. Falling back per-pile would 
 claims against the author's CV, silently.
 
 `corpus/` on disk is the author's own history: baked into the container, gitignored, never published.
+So that the sentence above is true for a fork and not only on the author's laptop, this repository
+ships `corpus.example/`: a fictional applicant, invented end to end, naming no real institution.
+Point `BERKAS_CORPUS` at it, or put your own files in `corpus/` and Berkas reads those instead. CI
+runs the suite against `corpus.example/`, which is what makes the badge mean anything on a clean
+checkout.
 
 ## Gate 0, and what it can and cannot do
 
@@ -265,8 +270,8 @@ gcloud secrets create berkas-gmail-token --data-file=credentials/gmail_token.jso
 # 4 · Optional: the bundled fallback corpus
 uv run python scripts/sync_corpus.py
 
-# 5 · Verify, then run
-uv run pytest -q
+# 5 · Verify, then run. Skipped step 4? corpus/ is empty — use the example instead:
+BERKAS_CORPUS=corpus.example uv run pytest -q
 uv run uvicorn main:app --reload      # http://localhost:8000
 
 # 6 · Deploy
