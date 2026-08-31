@@ -44,6 +44,11 @@ submitted. That verdict comes from `berkas/compliance.py`: plain Python, standar
 model in the path. The same draft yields the same verdict every time, and a well-written essay
 cannot argue its way past a word cap.
 
+![Berkas architecture: the applicant lane across the top, the system below it, and the four gates between them](docs/architecture.png)
+
+<details>
+<summary>The same graph as text, for diffing. The picture above is generated from <code>docs/architecture.html</code>.</summary>
+
 ```mermaid
 flowchart TD
     U["👤 <b>You</b><br/><i>background · how you write · how you speak</i>"] -->|uploads| G0
@@ -86,6 +91,8 @@ flowchart TD
     P -.-> VX
     D -.-> VX
 ```
+
+</details>
 
 ## Four gates, and every one is recorded
 
@@ -319,6 +326,7 @@ berkas/
 static/index.html  the screens. Vanilla JS, no build step, light/dark, EN/ID.
 tests/             compliance rules, all four gates, Gemma's fallbacks, the corpus
 samples/           an awkward call document, its answer key, detector fixtures
+docs/architecture.html  the diagram above. Regenerate the PNG from it; do not redraw it.
 PRD.md             scope, contracts and rules, frozen before the code
 ```
 
