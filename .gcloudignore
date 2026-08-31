@@ -1,0 +1,14 @@
+# Without this file, `gcloud run deploy --source .` falls back to .gitignore --
+# which excludes corpus/, the evidence Berkas is supposed to draw on. The service
+# then deploys perfectly and quietly knows nothing about the applicant.
+# This file exists so the two ignore lists can differ on purpose.
+.git/
+.gitignore
+.venv/
+credentials/
+__pycache__/
+**/__pycache__/
+*.pyc
+.pytest_cache/
+.env
+samples/
