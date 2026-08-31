@@ -44,7 +44,9 @@ def _token_json() -> str:
         client = secretmanager.SecretManagerServiceClient()
         project = os.environ["GOOGLE_CLOUD_PROJECT"]
         name = f"projects/{project}/secrets/{secret}/versions/latest"
-        return client.access_secret_version(name={"name": name}).payload.data.decode()
+        # request=, not name=: passing a dict to name= raises a protobuf TypeError
+        # that only ever surfaces on Cloud Run, where this branch is the live one.
+        return client.access_secret_version(request={"name": name}).payload.data.decode()
 
     if TOKEN_PATH.exists():
         return TOKEN_PATH.read_text()
