@@ -1,4 +1,440 @@
 <!doctype html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Berkas</title>
-<p>Berkas — build in progress.</p>
+<style>
+  :root{
+    --bg:#0c0e11; --panel:#14181d; --line:#242a32; --line-soft:#1c2128;
+    --ink:#e9e7e4; --dim:#8b949e; --faint:#5c6773;
+    --ok:#3fb950; --block:#f85149; --edit:#d29922; --accent:#58a6ff;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 var(--sans);
+       -webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:32px 24px 80px}
+
+  header{display:flex;align-items:baseline;gap:12px;padding-bottom:20px;
+         border-bottom:1px solid var(--line);margin-bottom:36px}
+  header h1{font-size:20px;margin:0;letter-spacing:-.01em}
+  header .gloss{color:var(--faint);font-size:13px}
+
+  .step{display:none}
+  .step.on{display:block;animation:in .25s ease}
+  @keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  h2{font-size:26px;margin:0 0 8px;letter-spacing:-.02em}
+  .lede{color:var(--dim);margin:0 0 28px;font-size:15px}
+
+  .drop{border:1.5px dashed var(--line);border-radius:12px;padding:44px 24px;
+        text-align:center;cursor:pointer;transition:.15s;background:var(--panel)}
+  .drop:hover,.drop.hot{border-color:var(--accent);background:#131a22}
+  .drop .icon{font-size:30px;display:block;margin-bottom:10px}
+  .drop .hint{color:var(--faint);font-size:13px;margin-top:6px}
+  #fileName{margin-top:14px;font:13px var(--mono);color:var(--ok)}
+
+  button{font:inherit;font-weight:500;border:0;border-radius:8px;padding:13px 22px;
+         background:var(--accent);color:#04121f;cursor:pointer;transition:.15s}
+  button:hover:not(:disabled){filter:brightness(1.12)}
+  button:disabled{background:#21262d;color:var(--faint);cursor:not-allowed}
+  button.ghost{background:transparent;color:var(--dim);border:1px solid var(--line)}
+  .actions{margin-top:28px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+
+  /* Screen 2 — the rulebook, still editable */
+  .rules{border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .rule{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center;
+        padding:13px 16px;border-bottom:1px solid var(--line-soft)}
+  .rule:last-child{border-bottom:0}
+  .rule .k{color:var(--dim);font-size:13px}
+  .rule input{width:100%;background:transparent;border:1px solid transparent;
+              border-radius:6px;padding:7px 9px;color:var(--ink);font:14px var(--mono)}
+  .rule input:hover{border-color:var(--line)}
+  .rule input:focus{outline:0;border-color:var(--edit);background:#1a1710}
+  .rule.touched input{border-color:var(--edit);background:#1a1710}
+  .rule .was{font:12px var(--mono);color:var(--edit);padding-left:9px}
+  .caps{margin-top:8px}
+  .cap-row{display:grid;grid-template-columns:1fr 110px;gap:14px;align-items:center;
+           padding:11px 16px;border-bottom:1px solid var(--line-soft)}
+  .cap-row:last-child{border-bottom:0}
+  .cap-row .nm{font-size:14px}
+  .cap-row .req{color:var(--faint);font-size:11px;text-transform:uppercase;letter-spacing:.06em}
+  .note{margin-top:18px;padding:12px 14px;border-left:2px solid var(--edit);
+        background:#16130c;color:#e3c46a;font-size:13px;border-radius:0 6px 6px 0}
+
+  /* Interview */
+  .q{border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:12px;
+     background:var(--panel)}
+  .q .why{color:var(--faint);font-size:12px;margin:6px 0 10px}
+  .q .sec{color:var(--accent);font:11px var(--mono);text-transform:uppercase;letter-spacing:.06em}
+  .q textarea{width:100%;background:#0f1317;border:1px solid var(--line);border-radius:6px;
+              color:var(--ink);font:14px/1.5 var(--sans);padding:10px;resize:vertical;min-height:64px}
+  .q textarea:focus{outline:0;border-color:var(--accent)}
+
+  /* Screen 3 — the gate */
+  .sec-card{border:1px solid var(--line);border-radius:10px;margin-bottom:12px;
+            background:var(--panel);overflow:hidden}
+  .sec-card.bad{border-color:var(--block);box-shadow:0 0 0 1px var(--block)}
+  .sec-head{display:flex;justify-content:space-between;align-items:center;
+            padding:12px 16px;border-bottom:1px solid var(--line-soft);gap:12px}
+  .sec-head .nm{font-weight:600;font-size:15px}
+  .count{font:13px var(--mono);color:var(--ok)}
+  .count.bad{color:var(--block);font-weight:700}
+  .badge{font:11px var(--mono);letter-spacing:.08em;padding:3px 8px;border-radius:4px;
+         background:var(--block);color:#fff;font-weight:700}
+  .sec-card textarea{width:100%;border:0;background:transparent;color:var(--ink);
+                     font:14px/1.65 var(--sans);padding:14px 16px;resize:vertical;min-height:150px}
+  .sec-card textarea:focus{outline:0;background:#0f1317}
+
+  .verdict{border-radius:10px;padding:16px 18px;margin:22px 0;font-size:15px}
+  .verdict.bad{background:#1d1112;border:1px solid var(--block);color:#ffb4ae}
+  .verdict.good{background:#0f1a12;border:1px solid var(--ok);color:#8fdc9c}
+  .verdict b{display:block;margin-bottom:4px;font-size:16px}
+  .verdict ul{margin:8px 0 0;padding-left:18px}
+
+  .receipt{border:1px solid var(--ok);background:#0f1a12;border-radius:10px;padding:18px}
+  .receipt h3{margin:0 0 12px;font-size:16px;color:var(--ok)}
+  .receipt dl{display:grid;grid-template-columns:170px 1fr;gap:7px 14px;margin:0;
+              font:12.5px var(--mono)}
+  .receipt dt{color:var(--faint)}
+  .receipt dd{margin:0;word-break:break-all}
+
+  .status{color:var(--dim);font-size:14px;display:flex;align-items:center;gap:9px}
+  .spin{width:13px;height:13px;border:2px solid var(--line);border-top-color:var(--accent);
+        border-radius:50%;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .err{color:var(--block);font-size:14px;margin-top:14px;white-space:pre-wrap}
+  .trail{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);
+         font:12px var(--mono);color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Berkas</h1>
+    <span class="gloss">Indonesian: the file, the dossier, the papers you submit.</span>
+  </header>
+
+  <!-- 1 ................................................................. -->
+  <section id="s1" class="step on">
+    <h2>What are you applying to?</h2>
+    <p class="lede">Berkas reads the call and tells you what it actually requires.</p>
+    <div class="drop" id="drop">
+      <span class="icon">▤</span>
+      <div>Drop the call for applications, or click to choose</div>
+      <div class="hint">PDF, or a photograph of the page</div>
+      <div id="fileName"></div>
+    </div>
+    <input type="file" id="file" hidden accept="application/pdf,image/*,text/plain">
+    <div class="actions">
+      <button id="read" disabled>Read the requirements</button>
+      <span class="status" id="s1status"></span>
+    </div>
+    <div class="err" id="s1err"></div>
+  </section>
+
+  <!-- 2 ................................................................. -->
+  <section id="s2" class="step">
+    <h2>Correct me before I start</h2>
+    <p class="lede">These become the rules. Nothing is written until you agree.</p>
+    <div class="rules" id="rules"></div>
+    <div class="rules caps" id="caps"></div>
+    <div class="note" id="edited" hidden></div>
+    <div class="actions">
+      <button id="confirmSpec">These are correct — continue</button>
+      <span class="status" id="s2status"></span>
+    </div>
+    <div class="err" id="s2err"></div>
+  </section>
+
+  <!-- 3 ................................................................. -->
+  <section id="s3" class="step">
+    <h2>A few things your files don't answer</h2>
+    <p class="lede">Berkas asks rather than assumes. Anything you leave blank stays
+      marked in the packet, and a marked packet cannot be submitted.</p>
+    <div id="questions"></div>
+    <div class="actions">
+      <button id="writeIt">Write the packet</button>
+      <span class="status" id="s3status"></span>
+    </div>
+    <div class="err" id="s3err"></div>
+  </section>
+
+  <!-- 4 ................................................................. -->
+  <section id="s4" class="step">
+    <h2 id="s4title">The packet</h2>
+    <p class="lede">Hard constraints cap. They do not warn.</p>
+    <div id="verdict"></div>
+    <div id="sections"></div>
+    <div class="rule" id="toRow" style="border:1px solid var(--line);border-radius:10px;margin-top:20px">
+      <span class="k">send to</span>
+      <input id="to" placeholder="recipient@example.com">
+    </div>
+    <div class="actions">
+      <button id="recheck" class="ghost">Re-check</button>
+      <button id="send" disabled>Send it</button>
+      <span class="status" id="s4status"></span>
+    </div>
+    <div class="err" id="s4err"></div>
+    <div id="receipt"></div>
+    <div class="trail" id="trail"></div>
+  </section>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const api = "/api";
+let state = { file:null, specId:null, spec:null, extracted:null, draftId:null, compliance:null };
+
+const show = id => document.querySelectorAll(".step")
+  .forEach(s => s.classList.toggle("on", s.id === id));
+const busy = (el, msg) => el.innerHTML = msg ? `<span class="spin"></span>${msg}` : "";
+const fail = (el, e) => el.textContent = typeof e === "string" ? e : (e.message || JSON.stringify(e));
+
+async function call(path, opts={}) {
+  const r = await fetch(api + path, opts);
+  const body = await r.json().catch(() => ({}));
+  if (!r.ok) { const e = new Error(typeof body.detail === "string" ? body.detail
+                : JSON.stringify(body.detail || body)); e.status = r.status; e.detail = body.detail; throw e; }
+  return body;
+}
+
+fetch(api + "/health").then(r => r.json())
+  .then(h => { if (h.default_recipient) $("#to").value = h.default_recipient; })
+  .catch(() => {});
+
+/* 1 — drop it ------------------------------------------------------------ */
+const drop = $("#drop"), fileIn = $("#file");
+drop.onclick = () => fileIn.click();
+drop.ondragover = e => { e.preventDefault(); drop.classList.add("hot"); };
+drop.ondragleave = () => drop.classList.remove("hot");
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove("hot"); pick(e.dataTransfer.files[0]); };
+fileIn.onchange = e => pick(e.target.files[0]);
+
+function pick(f) {
+  if (!f) return;
+  state.file = f;
+  $("#fileName").textContent = f.name;
+  $("#read").disabled = false;
+}
+
+$("#read").onclick = async () => {
+  $("#s1err").textContent = "";
+  $("#read").disabled = true;
+  busy($("#s1status"), "reading the document…");
+  try {
+    const fd = new FormData(); fd.append("file", state.file);
+    const out = await call("/extract", { method:"POST", body:fd });
+    state.specId = out.spec_id;
+    state.spec = out.spec;
+    state.extracted = JSON.parse(JSON.stringify(out.spec));
+    renderSpec();
+    show("s2");
+  } catch (e) { fail($("#s1err"), e); $("#read").disabled = false; }
+  busy($("#s1status"), "");
+};
+
+/* 2 — the rulebook, still editable --------------------------------------- */
+function renderSpec() {
+  const s = state.spec;
+  $("#rules").innerHTML = [
+    ["programme","programme", s.programme || ""],
+    ["deadline","deadline", s.deadline || ""],
+    ["register","voice_register", s.voice_register || ""],
+  ].map(([label, key, val]) => `
+    <div class="rule" data-key="${key}">
+      <span class="k">${label}</span>
+      <input value="${String(val).replace(/"/g,"&quot;")}" data-field="${key}">
+    </div>`).join("");
+
+  $("#caps").innerHTML = s.sections.map((sec, i) => `
+    <div class="cap-row" data-i="${i}">
+      <div>
+        <div class="nm">${sec.name}</div>
+        <div class="req">${sec.required ? "required" : "optional"}</div>
+      </div>
+      <input data-cap="${i}" value="${sec.word_cap ?? ""}" placeholder="no limit">
+    </div>`).join("");
+
+  $("#rules").oninput = $("#caps").oninput = markEdits;
+  markEdits();
+}
+
+function markEdits() {
+  const changed = [];
+  document.querySelectorAll("#rules input").forEach(inp => {
+    const k = inp.dataset.field;
+    const was = state.extracted[k] || "";
+    const now = inp.value.trim();
+    const diff = String(was) !== now;
+    inp.closest(".rule").classList.toggle("touched", diff);
+    if (diff) changed.push(`${k}: "${was}" → "${now}"`);
+  });
+  document.querySelectorAll("#caps input").forEach(inp => {
+    const i = +inp.dataset.cap;
+    const was = state.extracted.sections[i].word_cap;
+    const now = inp.value.trim() === "" ? null : Number(inp.value);
+    const diff = was !== now;
+    inp.closest(".cap-row").classList.toggle("touched", diff);
+    if (diff) changed.push(`${state.spec.sections[i].name}: ${was ?? "no limit"} → ${now ?? "no limit"} words`);
+  });
+
+  const note = $("#edited");
+  note.hidden = changed.length === 0;
+  if (changed.length) note.innerHTML = "You corrected " + changed.length +
+    (changed.length === 1 ? " thing" : " things") + ":<br>" + changed.join("<br>");
+}
+
+$("#confirmSpec").onclick = async () => {
+  $("#s2err").textContent = "";
+  busy($("#s2status"), "recording your corrections…");
+  try {
+    const body = {
+      programme: $('[data-field="programme"]').value.trim(),
+      deadline:  $('[data-field="deadline"]').value.trim() || null,
+      voice_register: $('[data-field="voice_register"]').value.trim(),
+      extra_requirements: state.spec.extra_requirements || [],
+      sections: state.spec.sections.map((sec, i) => ({
+        name: sec.name,
+        required: sec.required,
+        word_cap: (v => v === "" ? null : Number(v))($(`[data-cap="${i}"]`).value.trim()),
+      })),
+    };
+    state.spec = await call(`/spec/${state.specId}`, {
+      method:"PUT", headers:{"content-type":"application/json"}, body:JSON.stringify(body) });
+
+    busy($("#s2status"), "checking what your files already answer…");
+    const out = await call(`/interview/${state.specId}`, { method:"POST" });
+    renderQuestions(out.questions);
+    show("s3");
+  } catch (e) { fail($("#s2err"), e); }
+  busy($("#s2status"), "");
+};
+
+/* 3 — ask, don't assume --------------------------------------------------- */
+function renderQuestions(qs) {
+  if (!qs.length) {
+    $("#questions").innerHTML = `<div class="q">Your files already answer everything this
+      call asks for. Nothing to ask.</div>`;
+    return;
+  }
+  $("#questions").innerHTML = qs.map((q, i) => `
+    <div class="q">
+      <div class="sec">${q.section}</div>
+      <div>${q.question}</div>
+      <div class="why">${q.why}</div>
+      <textarea data-q="${encodeURIComponent(q.question)}" placeholder="in a sentence or two…"></textarea>
+    </div>`).join("");
+}
+
+$("#writeIt").onclick = async () => {
+  $("#s3err").textContent = "";
+  $("#writeIt").disabled = true;
+  busy($("#s3status"), "saving your answers…");
+  try {
+    const answers = {};
+    document.querySelectorAll("[data-q]").forEach(t => {
+      if (t.value.trim()) answers[decodeURIComponent(t.dataset.q)] = t.value.trim();
+    });
+    if (Object.keys(answers).length)
+      await call(`/answers/${state.specId}`, { method:"POST",
+        headers:{"content-type":"application/json"}, body:JSON.stringify({answers}) });
+
+    busy($("#s3status"), "drafting against the spec…");
+    const out = await call(`/draft/${state.specId}`, { method:"POST" });
+    state.draftId = out.draft_id;
+    renderPacket(out.draft.sections, out.compliance);
+    show("s4");
+  } catch (e) { fail($("#s3err"), e); }
+  $("#writeIt").disabled = false;
+  busy($("#s3status"), "");
+};
+
+/* 4 — the gate ------------------------------------------------------------ */
+function renderPacket(sections, compliance) {
+  state.compliance = compliance;
+  const byName = Object.fromEntries(compliance.checks.map(c => [c.section, c]));
+
+  $("#sections").innerHTML = Object.entries(sections).map(([name, text]) => {
+    const c = byName[name] || {};
+    const bad = c.ok === false;
+    const cap = c.cap == null ? "no limit" : c.cap;
+    return `
+      <div class="sec-card ${bad ? "bad" : ""}">
+        <div class="sec-head">
+          <span class="nm">${name}</span>
+          <span>
+            ${bad ? '<span class="badge">BLOCK</span> ' : ""}
+            <span class="count ${bad ? "bad" : ""}">${c.words ?? 0} / ${cap}</span>
+          </span>
+        </div>
+        <textarea data-sec="${name.replace(/"/g,"&quot;")}">${text}</textarea>
+      </div>`;
+  }).join("");
+
+  const n = compliance.violations.length;
+  $("#verdict").innerHTML = compliance.passed
+    ? `<div class="verdict good"><b>No violations.</b>
+         Every hard constraint in the call is satisfied. You can submit this.</div>`
+    : `<div class="verdict bad">
+         <b>${n} violation${n === 1 ? "" : "s"} — cannot submit</b>
+         <ul>${compliance.violations.map(v => `<li>${v.message}</li>`).join("")}</ul>
+       </div>`;
+
+  $("#s4title").textContent = compliance.passed ? "The packet" :
+    `${n} violation${n === 1 ? "" : "s"} — cannot submit`;
+  const send = $("#send");
+  send.disabled = !compliance.passed;
+  send.textContent = compliance.passed ? "Send it"
+    : `Cannot submit — ${n} violation${n === 1 ? "" : "s"}`;
+
+  $("#trail").textContent =
+    `spec ${state.specId} · corrected: ${(state.spec.corrected_fields||[]).join(", ") || "confirmed unchanged"} · draft ${state.draftId}`;
+}
+
+$("#recheck").onclick = async () => {
+  $("#s4err").textContent = "";
+  busy($("#s4status"), "counting…");
+  try {
+    const sections = {};
+    document.querySelectorAll("[data-sec]").forEach(t => sections[t.dataset.sec] = t.value);
+    const out = await call(`/draft/${state.draftId}`, { method:"PUT",
+      headers:{"content-type":"application/json"}, body:JSON.stringify({sections}) });
+    renderPacket(out.draft.sections, out.compliance);
+  } catch (e) { fail($("#s4err"), e); }
+  busy($("#s4status"), "");
+};
+
+$("#send").onclick = async () => {
+  $("#s4err").textContent = "";
+  $("#send").disabled = true;
+  busy($("#s4status"), "sending for real…");
+  try {
+    const r = await call(`/send/${state.draftId}`, { method:"POST",
+      headers:{"content-type":"application/json"}, body:JSON.stringify({ confirm:true, to: $("#to").value.trim() || null }) });
+    $("#receipt").innerHTML = `
+      <div class="receipt">
+        <h3>Sent. Here is the receipt.</h3>
+        <dl>
+          <dt>gmail message id</dt><dd>${r.gmail_message_id}</dd>
+          <dt>to</dt><dd>${r.to}</dd>
+          <dt>subject</dt><dd>${r.subject}</dd>
+          <dt>sent at</dt><dd>${r.sent_at}</dd>
+          <dt>you confirmed at</dt><dd>${r.confirmed_by_human_at}</dd>
+          <dt>receipt id</dt><dd>${r.receipt_id}</dd>
+        </dl>
+      </div>`;
+    $("#send").textContent = "Sent";
+  } catch (e) {
+    fail($("#s4err"), e.status === 409
+      ? "Refused by the API: " + JSON.stringify(e.detail?.violations || e.detail)
+      : e);
+    $("#send").disabled = false;
+  }
+  busy($("#s4status"), "");
+};
+</script>
+</body>
+</html>

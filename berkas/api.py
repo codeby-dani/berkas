@@ -32,6 +32,7 @@ def health() -> dict:
         "ok": True,
         "model": os.environ.get("MODEL_ID", "gemini-3.7-flash"),
         "evidence_files": len(evidence.inventory()),
+        "default_recipient": os.environ.get("BERKAS_DEMO_RECIPIENT", ""),
     }
 
 
