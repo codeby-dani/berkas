@@ -169,3 +169,112 @@ def test_spec_with_defaults_is_serialisable():
 
     dumped = StoredSpec(programme="anything").model_dump()
     assert all(not callable(v) for v in dumped.values()), dumped
+
+
+# --- unverified claims ---------------------------------------------------------
+#
+# The promise at the top of the README, made checkable. Before this rule the
+# drafting agent fabricated "2,000 USD" of household income in the same sentence
+# where it marked a different gap, and only the marker blocked the packet. A
+# fabrication written cleanly would have been submitted.
+
+CORPUS = (
+    "Telkom University, D3 in Applied Information Systems, GPA 3.83 out of 4.00. "
+    "Anagata, AI engineer. Apple Developer Academy. EVE reminder assistant. "
+    "IEEE SOFTT 2025 paper on energy forecasting. Universitas Terbuka."
+)
+
+
+def _spec1(name="motivation", cap=None):
+    return spec([{"name": name, "word_cap": cap, "required": True}])
+
+
+def test_a_fabricated_place_blocks():
+    result = check(
+        _spec1(),
+        draft(motivation="I will study at the Massachusetts Institute of Technology."),
+        attested=CORPUS,
+    )
+    violation = next(v for v in result["violations"] if v["rule"] == "unverified_claim")
+    assert "Massachusetts" in violation["actual"]
+    assert not result["passed"]
+
+
+def test_a_fabricated_number_blocks():
+    """The exact failure observed: an invented income beside a marked gap."""
+    result = check(
+        _spec1(),
+        draft(motivation="My household income is approximately 2,000 per month."),
+        attested=CORPUS,
+    )
+    assert [v["rule"] for v in result["violations"]] == ["unverified_claim"]
+    assert "2000" in result["violations"][0]["actual"]
+
+
+def test_claims_that_are_in_the_corpus_pass():
+    result = check(
+        _spec1(),
+        draft(motivation="I finished a D3 at Telkom University with a GPA of 3.83. "
+                         "I built agent pipelines at Anagata."),
+        attested=CORPUS,
+    )
+    assert result["passed"], result["violations"]
+
+
+def test_sentence_initial_capitals_are_not_claims():
+    """Capitalisation at a sentence start is a rule of English, not evidence."""
+    result = check(
+        _spec1(),
+        draft(motivation="Working there taught me a lot. Building things is how I learn. "
+                         "Nothing here names a place."),
+        attested=CORPUS,
+    )
+    assert result["passed"], result["violations"]
+
+
+def test_small_numbers_are_rhetoric_not_evidence():
+    result = check(
+        _spec1(),
+        draft(motivation="There are three reasons, and I will give two of them."),
+        attested=CORPUS,
+    )
+    assert result["passed"], result["violations"]
+
+
+def test_the_spec_attests_its_own_terms():
+    """He confirmed the spec at Gate 1, so what it names is not an invention."""
+    s = spec([{"name": "motivation", "word_cap": None, "required": True}])
+    s["programme"] = "Beasiswa Mobilitas Internasional"
+    result = check(s, draft(motivation="I am applying to Beasiswa Mobilitas Internasional."),
+                   attested=CORPUS)
+    assert result["passed"], result["violations"]
+
+
+def test_digit_grouping_does_not_defeat_the_check():
+    assert check(_spec1(), draft(motivation="It saved 1,250 hours."), attested="saved 1250 hours")["passed"]
+
+
+def test_without_attested_evidence_the_rule_is_silent():
+    """Grounding needs something to ground against; absent it, the rule cannot fire."""
+    result = check(_spec1(), draft(motivation="I studied at Hogwarts in 1997."))
+    assert result["passed"]
+
+
+# --- a total function ----------------------------------------------------------
+
+@pytest.mark.parametrize("bad", ["2026-09-7", "next friday", "14 September 2026", "2026/09/07", ""])
+def test_an_unreadable_deadline_is_a_violation_not_a_crash(bad):
+    """The deadline is a field a human edits, so it can hold anything they typed.
+
+    "2026-09-7" raised ValueError out of date.fromisoformat, took down the whole
+    draft request with a 500, and reached the user as an error message reading
+    "{}". A checker that crashes on its own input is not a checker.
+    """
+    result = check(spec([{"name": "m", "word_cap": None, "required": False}], deadline=bad),
+                   draft(m="text"), today=date(2026, 8, 31))
+    if not bad:
+        assert result["passed"]          # empty means "no deadline stated"
+        return
+    assert not result["passed"]
+    assert result["violations"][0]["rule"] == "deadline_unreadable"
+    assert "YYYY-MM-DD" in result["violations"][0]["message"]

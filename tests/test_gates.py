@@ -146,3 +146,123 @@ def test_a_compliant_confirmed_packet_sends_and_returns_a_receipt(client):
     assert receipt["confirmed_by_human_at"]
     assert len(client.sent) == 1
     assert client.sent[0]["to"] == "a@b.com"
+
+
+# --- Gate 3 --------------------------------------------------------------------
+#
+# The checker compares strings, so it cannot see through translation: a section in
+# Indonesian saying "Sistem Informasi" is flagged against a corpus that attests the
+# same credential in English. When the machine is wrong about him he overrules it,
+# and the override is recorded rather than silently permitted.
+
+def test_attesting_a_claim_clears_it_and_is_recorded(client, monkeypatch):
+    from berkas import evidence
+
+    # The corpus names it in English; the Indonesian section reverses the word order,
+    # so string containment cannot match them. The claim is true, the checker is wrong.
+    monkeypatch.setattr(evidence, "attested_text", lambda session_id=None: "Telkom University, Bandung")
+    spec = _spec(client, corrected=True, cap=None)
+    draft = Draft(spec_id=spec.spec_id,
+                  sections={"motivation": "Saya menyelesaikan diploma di Universitas Telkom."})
+    client.drafts[draft.draft_id] = draft
+
+    blocked = client.post(f"/api/check/{draft.draft_id}").json()
+    assert [v["rule"] for v in blocked["violations"]] == ["unverified_claim"]
+
+    r = client.post(f"/api/attest/{draft.draft_id}",
+                    json={"claims": ["Universitas", "Telkom"]})
+    assert r.status_code == 200
+    assert r.json()["compliance"]["passed"], "his attestation should clear the flag"
+    assert r.json()["draft"]["attested_claims"] == ["Telkom", "Universitas"]
+    assert r.json()["draft"]["attested_at"], "the override must be timestamped"
+
+
+def test_an_attestation_reaches_the_receipt(client, monkeypatch):
+    """The record of what was sent says who stood behind which claim."""
+    from berkas import evidence
+
+    monkeypatch.setattr(evidence, "attested_text", lambda session_id=None: "nothing relevant")
+    spec = _spec(client, corrected=True, cap=None)
+    draft = Draft(spec_id=spec.spec_id, sections={"motivation": "I worked at Acme Corporation Limited."})
+    client.drafts[draft.draft_id] = draft
+
+    client.post(f"/api/attest/{draft.draft_id}", json={"claims": ["Acme", "Corporation", "Limited"]})
+    r = client.post(f"/api/send/{draft.draft_id}", json={"confirm": True, "to": "a@b.com"})
+    assert r.status_code == 200
+    assert r.json()["human_attested"] == ["Acme", "Corporation", "Limited"]
+
+
+def test_editing_the_text_drops_earlier_attestations(client, monkeypatch):
+    """Edited text is new text. Vouching for one sentence must not vouch for its
+    replacement, or the override becomes a permanent bypass."""
+    from berkas import evidence
+
+    monkeypatch.setattr(evidence, "attested_text", lambda session_id=None: "nothing relevant")
+    spec = _spec(client, corrected=True, cap=None)
+    draft = Draft(spec_id=spec.spec_id, sections={"motivation": "I worked at Acme Corporation Limited."})
+    client.drafts[draft.draft_id] = draft
+    client.post(f"/api/attest/{draft.draft_id}", json={"claims": ["Acme", "Corporation", "Limited"]})
+
+    r = client.put(f"/api/draft/{draft.draft_id}",
+                   json={"sections": {"motivation": "I studied at Hogwarts School of Witchcraft."}})
+    assert r.json()["draft"]["attested_claims"] == []
+    assert not r.json()["compliance"]["passed"], "the new claim is not covered by the old attestation"
+
+
+def test_attesting_nothing_is_refused(client):
+    spec = _spec(client, corrected=True)
+    draft = _draft(client, spec, words=10)
+    assert client.post(f"/api/attest/{draft.draft_id}", json={"claims": []}).status_code == 400
+
+
+def test_attesting_some_claims_does_not_clear_the_rest(client, monkeypatch):
+    """Gate 3 must be per-claim.
+
+    The first version offered one button that attested everything flagged at once.
+    On a real run that list held "Sistem" and "Informasi" -- true, translated --
+    alongside "Massachusetts", "Boston" and "Cambridge", which the model invented.
+    One click would have put his name behind all of them. A gate that is easier to
+    pass wholesale than to read is not a gate.
+    """
+    from berkas import evidence
+
+    monkeypatch.setattr(evidence, "attested_text", lambda session_id=None: "Telkom University, Bandung")
+    spec = _spec(client, corrected=True, cap=None)
+    draft = Draft(
+        spec_id=spec.spec_id,
+        sections={"motivation": "Saya belajar di Universitas Telkom. I will study at Massachusetts Institute."},
+    )
+    client.drafts[draft.draft_id] = draft
+
+    r = client.post(f"/api/attest/{draft.draft_id}", json={"claims": ["Universitas", "Telkom"]})
+    assert r.status_code == 200
+    assert r.json()["draft"]["attested_claims"] == ["Telkom", "Universitas"]
+
+    still = r.json()["compliance"]
+    assert not still["passed"], "the invented destination must survive a partial attestation"
+    flagged = {c for v in still["violations"] if v["rule"] == "unverified_claim" for c in v["actual"]}
+    assert "Massachusetts" in flagged
+    assert "Universitas" not in flagged
+
+    assert client.post(f"/api/send/{draft.draft_id}",
+                       json={"confirm": True, "to": "a@b.com"}).status_code == 409
+    assert client.sent == []
+
+
+def test_a_single_digit_day_is_repaired_at_the_gate(client):
+    """People type 2026-09-7. Repair the unambiguous case rather than refuse it."""
+    spec = _spec(client, corrected=False)
+    body = spec.model_dump()
+    body["deadline"] = "2026-09-7"
+    out = client.put(f"/api/spec/{spec.spec_id}", json=body).json()
+    assert out["deadline"] == "2026-09-07"
+
+
+def test_a_deadline_that_is_not_a_date_is_kept_verbatim(client):
+    """Not repaired, not rejected: kept so compliance can show it back to them."""
+    spec = _spec(client, corrected=False)
+    body = spec.model_dump()
+    body["deadline"] = "sometime in September"
+    out = client.put(f"/api/spec/{spec.spec_id}", json=body).json()
+    assert out["deadline"] == "sometime in September"
+    assert "deadline" in out["corrected_fields"]

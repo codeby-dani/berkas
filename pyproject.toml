@@ -13,6 +13,7 @@ dependencies = [
     "google-auth-oauthlib>=1.4.1",
     "google-cloud-firestore>=2.29.0",
     "google-cloud-secret-manager>=2.30.0",
+    "pypdf>=6.16.2",
     "python-multipart>=0.0.32",
 ]
 
@@ -26,6 +27,7 @@ package = false
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
+    "reportlab>=5.0.1",
 ]
 
 [tool.pytest.ini_options]

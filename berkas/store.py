@@ -15,6 +15,7 @@ from google.cloud import firestore
 
 from berkas.models import Draft, Receipt, StoredSpec
 
+SESSIONS = "sessions"
 SPECS = "specs"
 DRAFTS = "drafts"
 RECEIPTS = "receipts"
@@ -57,3 +58,39 @@ def save_answers(spec_id: str, answers: dict[str, str]) -> None:
 def get_answers(spec_id: str) -> dict[str, str]:
     snap = db().collection(SPECS).document(spec_id).get()
     return (snap.to_dict() or {}).get("answers", {}) if snap.exists else {}
+
+
+def save_session_files(session_id: str, kind: str, files: list[dict]) -> int:
+    """Store what a visitor uploaded. `kind` is "background" or "voice".
+
+    Firestore caps a document at 1 MB, which is ample for the handful of documents
+    this asks for and is the reason the API caps the upload rather than streaming
+    it somewhere larger.
+    """
+    doc = db().collection(SESSIONS).document(session_id)
+    existing = (doc.get().to_dict() or {}).get(kind, [])
+    doc.set({kind: existing + files}, merge=True)
+    return len(existing) + len(files)
+
+
+def get_session_files(session_id: str, kind: str) -> list[dict]:
+    snap = db().collection(SESSIONS).document(session_id).get()
+    return (snap.to_dict() or {}).get(kind, []) if snap.exists else []
+
+
+def save_speaking(session_id: str, profile: dict) -> None:
+    db().collection(SESSIONS).document(session_id).set({"speaking": profile}, merge=True)
+
+
+def get_speaking(session_id: str) -> dict | None:
+    snap = db().collection(SESSIONS).document(session_id).get()
+    # A deleted recording is stored as an explicit null, not removed, so this
+    # must read "or None" rather than trusting the key to be absent.
+    return ((snap.to_dict() or {}).get("speaking") or None) if snap.exists else None
+
+
+def delete_speaking(session_id: str) -> None:
+    """Drop a recording and its profile. Redoing an answer must not leave the old
+    level behind: a profile the applicant thought they had replaced would go on
+    shaping every draft."""
+    db().collection(SESSIONS).document(session_id).set({"speaking": None}, merge=True)

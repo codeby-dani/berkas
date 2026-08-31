@@ -829,6 +829,10 @@ pyparsing==3.3.2 \
     --hash=sha256:850ba148bd908d7e2411587e247a1e4f0327839c40e2e5e6d05a007ecc69911d \
     --hash=sha256:c777f4d763f140633dcb6d8a3eda953bf7a214dc4eff598413c070bcdc117cbc
     # via httplib2
+pypdf==6.16.2 \
+    --hash=sha256:595647f6191de6f402cfde1d0c455d6cbccbd509aac32b34783009c032de5d6e \
+    --hash=sha256:c8b09a59399062fb45a1b8156c18a787a10a3dae03ac9674397a226712c94604
+    # via hackathon-agent
 python-dotenv==1.2.3 \
     --hash=sha256:904552145e8bfed22162c09dab1c2b9b54fefa7b23ba780f4f26ca0316b0f0d9 \
     --hash=sha256:a20a594dabeaa385725aa239d5244871c143ecb356add8a20fcf23773a6c3a35

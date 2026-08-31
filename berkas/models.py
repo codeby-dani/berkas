@@ -38,6 +38,8 @@ class ExtractedSpec(BaseModel):
 
 class StoredSpec(ExtractedSpec):
     spec_id: str = Field(default_factory=_id)
+    # Whose uploaded corpus this packet draws on. None means the bundled one.
+    session_id: str | None = None
     created_at: str = Field(default_factory=_now)
 
     # What perception originally said, kept immutable so the correction is auditable
@@ -54,6 +56,16 @@ class Draft(BaseModel):
     draft_id: str = Field(default_factory=_id)
     spec_id: str
     sections: dict[str, str] = Field(default_factory=dict)
+    # How many corpus files Gemma routed to each section. None when it was unavailable.
+    routing: dict[str, int] | None = None
+
+    # GATE 3. Claims the checker could not find in his files and he vouched for anyway.
+    # The checker is string containment, so it cannot see through translation: a section
+    # in Indonesian saying "Sistem Informasi" is flagged against a corpus that attests
+    # the same credential in English. When the machine is wrong about him, he overrules
+    # it -- and the override is recorded rather than merely permitted.
+    attested_claims: list[str] = Field(default_factory=list)
+    attested_at: str | None = None
     created_at: str = Field(default_factory=_now)
 
 
@@ -68,3 +80,6 @@ class Receipt(BaseModel):
     draft_id: str
     compliance_passed: bool = True
     confirmed_by_human_at: str
+    # Whatever he personally vouched for at Gate 3, carried onto the receipt so the
+    # record of what was sent says who stood behind which claim.
+    human_attested: list[str] = Field(default_factory=list)
