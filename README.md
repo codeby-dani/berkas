@@ -1,5 +1,22 @@
 # Berkas
 
+[![Berkas CI](https://github.com/codeby-dani/berkas/actions/workflows/ci.yml/badge.svg)](https://github.com/codeby-dani/berkas/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue?style=flat)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.13-blue?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![Google ADK](https://img.shields.io/badge/Google_ADK-2.8.0-4285F4?style=flat&logo=google&logoColor=white)](https://google.github.io/adk-docs/)
+[![Google GenAI SDK](https://img.shields.io/badge/Google_GenAI_SDK-google--genai_2.20.0-blue?style=flat)](https://pypi.org/project/google-genai/)
+[![GCP](https://img.shields.io/badge/GCP-Cloud_Run_%7C_Vertex_AI_%7C_Firestore-4285F4?style=flat&logo=googlecloud&logoColor=white)](https://cloud.google.com/)
+[![Gemini](https://img.shields.io/badge/Gemini-3.7_Flash-8E75B2?style=flat&logo=googlegemini&logoColor=white)](https://deepmind.google/technologies/gemini/)
+[![Gemma](https://img.shields.io/badge/Gemma-4_26B-8E75B2?style=flat&logo=google&logoColor=white)](https://ai.google.dev/gemma)
+[![Live demo](https://img.shields.io/badge/Live_demo-Cloud_Run-34A853?style=flat&logo=googlecloud&logoColor=white)](https://berkas-jprtd3yasa-uc.a.run.app)
+[![All Things Agentic](https://img.shields.io/badge/All_Things_Agentic-Google_%C3%97_Devpost-003E54?style=flat&logo=devpost&logoColor=white)](https://allthingsagentic.devpost.com/)
+
+<picture>
+  <source media="(prefers-color-scheme: dark)"  srcset="assets/banner-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="assets/banner-light.png">
+  <img alt="Berkas — The model perceives. Code decides. You confirm." src="assets/banner-dark.png">
+</picture>
+
 > **berkas** · Indonesian: the file, the dossier, the papers you submit.
 
 **It never invents a claim about your experience. Every sentence in the packet traces to a file you
