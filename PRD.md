@@ -46,8 +46,22 @@ confirmation (Gate 2) → real Gmail send → Firestore receipt. Three screens. 
 checker. Architecture diagram. Reproducible README.
 
 **Out, and stays out.** Multi-document or multi-institution generalisation; authentication or
-multi-user; file storage beyond the uploaded document; streaming UI; retry/queue infrastructure;
+accounts; streaming UI; retry/queue infrastructure;
 mobile layout; any styling not visible on camera.
+
+## 3a. Bring your own corpus
+
+Berkas can only say what you have already said, so the first screen collects it. Two slots, and
+the separation is load-bearing rather than cosmetic:
+
+- **background** — CVs, past applications. Read for **facts**, never for style. Formal documents
+  written for machine screening are exactly what makes an application sound like every other
+  application, so drafting is told to read them for facts and ignore how they are written.
+- **voice** — a long message, an email, a journal entry. Read for **style**, and never usable as
+  evidence: a turn of phrase must not become a claim.
+
+Held in Firestore against a client-generated session id. A session that uploads nothing falls back
+to the bundled corpus, so the demo works on a fresh visit and a fork works for whoever cloned it.
 
 ## 4. Data contracts
 

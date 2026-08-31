@@ -13,16 +13,29 @@ that the system actually works.
 
 - [ ] `https://berkas-jprtd3yasa-uc.a.run.app` opened once already, so the container is warm.
       **Cold start is ~14 seconds.** Hit it, wait, then reload before recording.
-- [ ] The IISMA call document on your desktop, ready to drag.
+- [ ] `samples/hard-call-for-applications.pdf` on your desktop, ready to drag.
+- [ ] A paragraph of text on your clipboard, for the word-cap demo at 2:15.
 - [ ] `dani.muhammad.k@gmail.com` open in a second tab, inbox visible, **already scrolled to top**.
 - [ ] Firestore console open on the `receipts` collection, in a third tab.
 - [ ] Cloud Run console on the `berkas` service, fourth tab.
 - [ ] Browser zoom at 125%. The word counts must be legible after compression.
 - [ ] Close every notification. A Slack toast mid-take costs you the take.
 
-**Two places the model thinks and the screen sits still:** after *"These are correct — continue"*
-(~15–30s while it works out what your files don't answer) and after *"Write the packet"* (~30–60s).
+**Measured latencies on the live service, so you know what to speed through:**
+
+| Step | Time |
+|---|---|
+| Read the requirements | ~17s |
+| These are correct → questions appear | ~23s |
+| Write the packet | ~57s |
+| Re-check | ~1s |
+| Send | ~2s |
+
 Speed those through hard. Do not cut them out — a visible wait is honest, a jump cut is not.
+
+**On Gemma:** the routing panel on screen 4 may show per-section file counts, or it may say
+*"Gemma did not answer in time — drafting used your whole corpus."* Both are true outcomes and the
+packet is identical either way. If you get the fallback, say so plainly and move on — see 1:40.
 
 ---
 
@@ -56,42 +69,88 @@ Screen 2 appears. Point at what it got right:
 
 ## 1:00 – 1:40 · Correct it. This is the whole project.
 
-**Change the Statement of Motivation cap from 500 to 150.**
+Perception read the document correctly. **You are going to change it anyway**, and that is the point.
 
-The field turns amber. The note underneath updates live:
+The call says the portal closes **14 September**. There is a clause further down: applicants under
+the **Vocational (D3/D4) scheme** are assessed by an earlier panel and must submit by
+**7 September**. Your completed credential is a D3.
+
+**Change the deadline to 2026-09-07.**
 
 ```
 You corrected 1 thing:
-Statement of Motivation: 500 → 150 words
+deadline: "2026-09-14" → "2026-09-07"
 ```
 
-> "This is the part that matters. What the model read is not the rulebook yet. I correct it first,
-> and what I changed gets recorded — the original reading is kept next to my correction, so anyone
-> can see which of us decided what."
+> "The model read this document perfectly. It picked up the fourteenth, and it kept the vocational
+> clause in the requirements list, which is exactly right, because nothing in this PDF tells it which
+> scheme I am in. But my completed qualification is a D3. So the deadline that actually binds me is
+> the seventh, a week earlier, and I am the only one in this system who knows that."
+
+> "That is the whole argument. It is not that the model is unreliable. It read it right. It just
+> cannot know things about me that are not on the page — and if I had let its reading become the
+> rulebook, I would have missed a deadline by seven days and never known why."
 
 Click **These are correct — continue**.
 
-> "And until I do that, the drafting endpoint returns a 409. Not a disabled button. The API refuses."
+> "My correction is recorded next to what it originally said. And until I do this, the drafting
+> endpoint returns a 409. Not a disabled button. The API refuses."
 
 ## 1:40 – 2:30 · It asks, then it blocks itself
 
-Interview questions appear. **Answer two of them, honestly and briefly. Leave one blank on purpose.**
+Three questions appear. **Answer two briefly. Leave the financial one blank on purpose.**
 
-> "It only asks what my own files don't already answer. I've written eleven applications; it doesn't
-> make me retype any of it."
+> "It only asks what my own files don't already answer. I've written eleven job applications; it
+> doesn't make me retype any of them."
 
-Click **Write the packet**. *(speed through the wait)*
+Click **Write the packet**. *(speed through ~57s)*
 
-Screen 4. Two different kinds of violation, which is the point:
+If the routing panel shows counts, point at it:
 
-> "Two blocks, for two different reasons. This one is over the cap I just set — two hundred and
-> eleven words against my hundred and fifty. And this one" — the `[NEEDS:]` section — "is the one I
-> actually care about. I left that question blank, so it refused to invent an answer. It wrote down
-> exactly what it would need and stopped. A packet with an invented claim in it cannot be sent."
+> "That's Gemma, a second model, sorting my files by which section each one can speak to."
 
-Point at the button: **Cannot submit — 2 violations**, greyed out.
+If it shows the fallback, say that instead — it is a better line, not a worse one:
 
-> "Not 'consider shortening this'. Cannot submit."
+> "Gemma didn't answer in time, so it used my whole corpus instead. That path is deliberate. A
+> second model making the packet better is worth having; a second model that can stop the packet
+> existing is not."
+
+Then the block:
+
+> "Six sections. Two of them cannot be submitted."
+
+Point at the `[NEEDS:]` marker:
+
+> "I left the financial question blank, so it refused to invent an answer. Nothing in eleven job
+> applications says anything about my household finances — why would it. So instead of writing
+> something plausible, it wrote down exactly what it would need, and stopped."
+
+Point at the greyed-out button:
+
+> "Cannot submit. Not 'consider revising'. An unsupported claim is a hard violation, the same as a
+> word count."
+
+### The part I would not cut
+
+Below the violations there is an amber panel listing claims Berkas could not find in your files.
+Some are genuine inventions. Some are true things it cannot verify, like *Sistem Informasi* in the
+Indonesian section, because your corpus states that credential in English.
+
+> "And here is where my own checker is wrong about me. It compares text against my files, so when
+> I write my degree in Indonesian it cannot match it against the English on my CV. It is not being
+> stupid. It genuinely cannot tell the difference between a translation and something I made up."
+
+Click **These are mine — I attest them**.
+
+> "So I overrule it. And that gets written down too, with my name on it, onto the receipt. Same as
+> when I corrected the deadline. The machine reports, I decide, and every time I decide, the system
+> records that it was me."
+
+**Then show the word cap too**, because it is the more legible of the two. Click into a section,
+paste a paragraph, click **Re-check**.
+
+> "Same gate, different rule, counted in plain Python. No model is asked whether this is short
+> enough, because models cannot count and a good essay should not be able to argue past a hard limit."
 
 ## 2:30 – 3:00 · Fix it, confirm it, send it
 
