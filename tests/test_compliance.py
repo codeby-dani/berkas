@@ -157,3 +157,15 @@ def test_verdict_is_stable_across_repeated_runs():
     assert [check(s, d, today=date(2026, 8, 31)) for _ in range(5)].count(
         check(s, d, today=date(2026, 8, 31))
     ) == 5
+
+
+# --- contract regression -------------------------------------------------------
+
+def test_spec_with_defaults_is_serialisable():
+    """A field named `register` shadows BaseModel.register and its unset default
+    serialises as a bound method, which Firestore rejects at write time. Setting
+    the field by hand hides this, so the regression test must not set it."""
+    from berkas.models import StoredSpec
+
+    dumped = StoredSpec(programme="anything").model_dump()
+    assert all(not callable(v) for v in dumped.values()), dumped

@@ -63,7 +63,7 @@ What perception reports and what Gate 1 edits. Stored in Firestore `specs/{spec_
 | `programme` | `str` | e.g. "IISMA 2026" |
 | `deadline` | `str \| None` | ISO-8601 date, `YYYY-MM-DD` |
 | `sections` | `[Section]` | see below |
-| `register` | `str` | e.g. "formal, first person" |
+| `voice_register` | `str` | e.g. "formal, first person". Not `register`: that name shadows `BaseModel.register`. |
 | `extra_requirements` | `[str]` | free-text rules perception found but cannot enforce |
 | `human_corrected` | `bool` | `False` until Gate 1 |
 | `corrected_fields` | `[str]` | dotted paths the human changed, e.g. `sections[1].word_cap` |
