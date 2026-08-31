@@ -10,6 +10,9 @@
 [![Gemma](https://img.shields.io/badge/Gemma-4_26B-8E75B2?style=flat&logo=google&logoColor=white)](https://ai.google.dev/gemma)
 [![Live demo](https://img.shields.io/badge/Live_demo-Cloud_Run-34A853?style=flat&logo=googlecloud&logoColor=white)](https://berkas-jprtd3yasa-uc.a.run.app)
 [![All Things Agentic](https://img.shields.io/badge/All_Things_Agentic-Google_%C3%97_Devpost-003E54?style=flat&logo=devpost&logoColor=white)](https://allthingsagentic.devpost.com/)
+[![Demo video](https://img.shields.io/badge/Demo_video-YouTube-FF0000?style=flat&logo=youtube&logoColor=white)](https://youtu.be/bS8ZJX-ZzYU)
+[![Blog post](https://img.shields.io/badge/Blog_post-dev.to-0A0A0A?style=flat&logo=devdotto&logoColor=white)](https://dev.to/daaaneh30/i-built-an-ai-that-refuses-to-send-my-application-g9a)
+[![LinkedIn](https://img.shields.io/badge/Write--up-LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/posts/danimuhammad_allthingsagentichackathon-googlecloud-vertexai-share-7500307867367989248-IJHN/)
 
 <picture>
   <source media="(prefers-color-scheme: dark)"  srcset="assets/banner-dark.png">
@@ -29,8 +32,19 @@ your own files do not already contain, drafts against the spec in your voice and
 a deterministic checker blocks the packet on any hard violation. On your explicit confirmation it
 files it for real and returns a timestamped receipt.
 
-**Live:** <https://berkas-jprtd3yasa-uc.a.run.app> · Built for **All Things Agentic** (Google ×
-Devpost), Collaborative Partner track.
+Built for **All Things Agentic** (Google × Devpost), Collaborative Partner track.
+
+## Submission links
+
+| | |
+|---|---|
+| **Live app** | <https://berkas-jprtd3yasa-uc.a.run.app> |
+| **Demo video** (4 min, public) | <https://youtu.be/bS8ZJX-ZzYU> |
+| **Blog — how it was built** | <https://dev.to/daaaneh30/i-built-an-ai-that-refuses-to-send-my-application-g9a> |
+| **LinkedIn post** | <https://www.linkedin.com/posts/danimuhammad_allthingsagentichackathon-googlecloud-vertexai-share-7500307867367989248-IJHN/> |
+
+The demo video and the blog post were both created for the purposes of entering the All Things
+Agentic hackathon.
 
 ---
 
